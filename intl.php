@@ -1,6 +1,6 @@
 <?php
 
-function paypal_directory() {
+function hookpress_paypal_directory() {
 	if (!defined('WPLANG'))
 		return 'en_US/';
 	switch (true) {
