@@ -7,7 +7,7 @@ Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=66G4D
 Tags: hook, filter, action, plugin, webhook, webhooks, notification, internal
 Requires at least: 2.8
 Tested up to: 2.8.2
-Stable tag: 0.1.2
+Stable tag: 0.1.3
 
 HookPress turns all of your WordPress-internal hooks into webhooks. Possible uses include generating push notifications or using non-PHP web technology to extend WordPress.
 
@@ -15,7 +15,7 @@ HookPress turns all of your WordPress-internal hooks into webhooks. Possible use
 
 Webhooks are a simple paradigm for developing instant notifications and mashups based on simple HTTP requests. With HookPress you can set up webhooks so that a specified URL (a public service or something you set up) is requested when certain WordPress actions occur. Possible uses include generating push notifications or using non-PHP web technology to extend WordPress.
 
-**To learn about the various hooks WordPress provides**, please consult the WordPress Plugin API's [Action Reference](http://codex.wordpress.org/Plugin_API/Action_Reference). HookPress currently only supports turning WordPress actions into webhooks... filter support is planned.
+**To learn about the various hooks WordPress provides**, please consult the WordPress Plugin API's [Action Reference](http://codex.wordpress.org/Plugin_API/Action_Reference) and [Filter Reference](http://codex.wordpress.org/Plugin_API/Filter_Reference). Not all hooks are supported yet, but more are coming soon.
 
 **To learn more about webhooks**, take a look at [the webhooks blog](http://blog.webhooks.org) as well as [The Pushbutton Web](http://dashes.com/anil/2009/07/the-pushbutton-web-realtime-becomes-real.html) by Anil Dash. Webhooks champion Jeff Lindsay's [excellent slides](http://www.slideshare.net/progrium/using-web-hooks) are a particularly good place to start.
 
