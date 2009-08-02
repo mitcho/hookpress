@@ -1,10 +1,29 @@
 <script type='text/javascript'>
 
-var getNewFields = function getNewFields() {
-  hook = jQuery('#newhook').val();
+var getHooks = function getHooks() {
+  var type = jQuery('.newtype:checked').attr('id');
+  if (type == 'action')
+    jQuery('#action_or_filter').text('<?php _e("Action:",'hookpress');?> ');
+  if (type == 'filter')
+    jQuery('#action_or_filter').text('<?php _e("Filter:",'hookpress');?> ');
 	jQuery.ajax({type:'POST',
     url:'admin-ajax.php',
-    data:'action=hookpress_get_fields&hook='+hook,
+    data:'action=hookpress_get_hooks&type='+type,
+    beforeSend:function(){jQuery('#newhook').html('<img src="../wp-content/plugins/hookpress/i/spin.gif" alt="loading..."/>')},
+    success:function(html){
+      jQuery('#newhook').html(html);
+      getFields();
+    },
+    dataType:'html'}
+	)
+}
+
+var getFields = function getFields() {
+  var hook = jQuery('#newhook').val();
+  var type = jQuery('.newtype:checked').attr('id');
+	jQuery.ajax({type:'POST',
+    url:'admin-ajax.php',
+    data:'action=hookpress_get_fields&hook='+hook+'&type='+type,
     beforeSend:function(){jQuery('#newfields').html('<img src="../wp-content/plugins/hookpress/i/spin.gif" alt="loading..."/>')},
     success:function(html){
       jQuery('#newfields').html(html)},
@@ -29,6 +48,7 @@ var newSubmit = function newSubmit() {
     data:'action=hookpress_add_fields'
          +'&fields='+jQuery('#newfields').val().join()
          +'&url='+jQuery('#newurl').val()
+         +'&type='+jQuery('.newtype:checked').attr('id')
          +'&hook='+jQuery('#newhook').val(),
     beforeSend:function(){
       jQuery('#newsubmit').hide();
@@ -91,19 +111,25 @@ var setHookEnabled = function setHookEnabled(id,boolean) {
 
 jQuery(document).ready(function(){
   // initial setup
-  getNewFields();
+  getHooks();
   // set event handler
   setEvents();
 });
 
 var setEvents = function setEvents() {
-  jQuery('#newhook').change(getNewFields);
+  jQuery('.newtype').change(getHooks);
+  jQuery('#newhook').change(getFields);
   jQuery('#newsubmit').click(newSubmit);
   jQuery('#newcancel').click(tb_remove);
   jQuery('.delete').click(function(e){
     var id = e.currentTarget.id.replace('delete','');
     deleteHook(id);
   });
+/*  jQuery('.edit').click(function(e){
+    var id = e.currentTarget.id.replace('edit','');
+//    setupEditHook(id);
+  });*/
+
   jQuery('.on').click(function(e){
     var id = e.currentTarget.id.replace('on','');
     setHookEnabled(id,'false');
@@ -134,13 +160,13 @@ var setEvents = function setEvents() {
 		
 	<form method="post">
 
-			<a href='https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=66G4DATK4999L&item_name=mitcho%2ecom%2fcode%3a%20donate%20to%20Michael%20Yoshitaka%20Erlewine&no_shipping=1&no_note=1&tax=0&currency_code=USD&lc=US&charset=UTF%2d8' target='_new'><img src="https://www.paypal.com/<?php echo hookpress_paypal_directory(); ?>i/btn/btn_donate_SM.gif" name="submit" alt="<?php _e('Donate to mitcho (Michael Yoshitaka Erlewine) for this plugin via PayPal');?>" title="<?php _e('Donate to mitcho (Michael Yoshitaka Erlewine) for this plugin via PayPal','hookpress');?>" style="float:right" /></a>
+			<a href='https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=66G4DATK4999L&item_name=mitcho%2ecom%2fcode%2fhookpress%3a%20donate%20to%20Michael%20Yoshitaka%20Erlewine&no_shipping=1&no_note=1&tax=0&currency_code=USD&lc=US&charset=UTF%2d8' target='_new'><img src="https://www.paypal.com/<?php echo hookpress_paypal_directory(); ?>i/btn/btn_donate_SM.gif" name="submit" alt="<?php _e('Donate to mitcho (Michael Yoshitaka Erlewine) for this plugin via PayPal');?>" title="<?php _e('Donate to mitcho (Michael Yoshitaka Erlewine) for this plugin via PayPal','hookpress');?>" style="float:right" /></a>
 
-	<p><small><?php _e('by <a href="http://mitcho.com/code/">mitcho (Michael 芳貴 Erlewine)</a>','hookpress');?>. <?php _e('Follow <a href="http://twitter.com/hookpress/">HookPress</a> on Twitter.','hookpress');?></small></p>
+	<p><small><?php _e('by <a href="http://mitcho.com/">mitcho (Michael 芳貴 Erlewine)</a>','hookpress');?>. <?php _e('Follow <a href="http://twitter.com/hookpress/">HookPress</a> on Twitter.','hookpress');?></small></p>
 
 	<h3>Webhooks</h3>
 	<table id='webhooks'>
-	  <thead><tr><th colspan='2'>hook</th><th>URL</th><th>fields</th></tr></thead>
+	  <thead><tr><th colspan='3'>hook</th><th>URL</th><th>fields</th></tr></thead>
   	<tbody>
   	<?php
   	foreach (get_option('hookpress_webhooks') as $id => $desc) {
@@ -151,14 +177,14 @@ var setEvents = function setEvents() {
   	</tbody>
 	</table>
 
-  <input class="thickbox button" type="button" value="<?php _e("Add webhook",'hookpress');?>" title="<?php _e('Add new webhook','hookpress');?>" alt="#TB_inline?height=310&width=500&inlineId=hookpress-new-webhook"/>
+  <input class="thickbox button" type="button" value="<?php _e("Add webhook",'hookpress');?>" title="<?php _e('Add new webhook','hookpress');?>" alt="#TB_inline?height=330&width=500&inlineId=hookpress-new-webhook"/>
 
 <!--	<h3>General options</h3>
 	
 	<div>
 		<p class="submit">
-			<input type="submit" name="update_yarpp" value="<?php _e("Update options",'hookpress')?>" />
-			<input type="submit" onclick='return confirm("<?php _e("Do you really want to reset your configuration?",'hookpress');?>");' class="hookpress_warning" name="reset_yarpp" value="<?php _e('Reset options','hookpress')?>" />
+			<input type="submit" name="update_hookpress" value="<?php _e("Update options",'hookpress')?>" />
+			<input type="submit" onclick='return confirm("<?php _e("Do you really want to reset your configuration?",'hookpress');?>");' class="hookpress_warning" name="reset_hookpress" value="<?php _e('Reset options','hookpress')?>" />
 		</p>
 	</div>-->
 		
@@ -167,9 +193,10 @@ var setEvents = function setEvents() {
 <div id='hookpress-new-webhook' style='display:none;'>
 <form id='newform'>
 <table>
+<tr><td><label style='font-weight: bold' for='newhook'><?php _e("WordPress hook type:",'hookpress');?> </label></td><td><input type='radio' id='action' class='newtype' name='newtype' checked='checked'> action</input> <input type='radio' id='filter' class='newtype' name='newtype'> filter</input></td></tr>
 <tr>
-<td><label style='font-weight: bold' for='newhook'>WordPress hook: </label><br/>
-<small>(Currently only actions are available)</small></td><td><select name='newhook' id='newhook'>
+<td><label style='font-weight: bold' for='newhook' id='action_or_filter'></label><!--<br/>
+<small><?php _e('(Currently only actions are available)','hookpress');?></small>--></td><td><select name='newhook' id='newhook'>
     <?php
       $keys = array_keys($hookpress_actions);
       sort($keys);
@@ -178,14 +205,14 @@ var setEvents = function setEvents() {
       }
     ?>
   </select></td></tr>
-<tr><td style='vertical-align: top'><label style='font-weight: bold' for='newfields'>Fields: </label><br/><small>(Ctrl-click on Windows or Command-click on Mac to select multiple. The <code>hook</code> field with the relevant hook name is always sent.)</small></td><td><select style='vertical-align: top' name='newfields' id='newfields' multiple='multiple' size='8'>
+<tr><td style='vertical-align: top'><label style='font-weight: bold' for='newfields'><?php _e("Fields:",'hookpress');?> </label><br/><small><?php _e("Ctrl-click on Windows or Command-click on Mac to select multiple. The <code>hook</code> field with the relevant hook name is always sent.)");?></small></td><td><select style='vertical-align: top' name='newfields' id='newfields' multiple='multiple' size='8'>
   </select></td></tr>
-<tr><td><label style='font-weight: bold' for='newurl'>URL: </label></td><td><input name='newurl' id='newurl' size='40' value='http://'></input></td></tr>
+<tr><td><label style='font-weight: bold' for='newurl'><?php _e("URL:",'hookpress');?> </label></td><td><input name='newurl' id='newurl' size='40' value='http://'></input></td></tr>
 </table>
 
   <center><span id='newindicator'></span><br/>
-  <input type='button' class='button' id='newsubmit' value='Add new webhook'/>
-  <input type='button' class='button' id='newcancel' value='Cancel'/></center>
+  <input type='button' class='button' id='newsubmit' value='<?php _e('Add new webhook','hookpress');?>'/>
+  <input type='button' class='button' id='newcancel' value='<?php _e('Cancel');?>'/></center>
 
 </form>
 </div>

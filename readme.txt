@@ -42,6 +42,10 @@ If you have a feature request or question, please use the <a href='http://wordpr
    * Added support for `parent_*` post fields for `save_post` which are sent in case the post is a revision of a previous draft.
    * Fixes a PHP error which displayed on install
    * Disallowed redirects on the webhook - corrects duplicate records when used with PostBin
+* 0.1.3
+   * A small bugfix to the filters list for `save_pre`
+   * Initial support for filters with an short list of supported filters
+   * Updated `test.php` to return first parameter (to trivially support filters)
 
 = Future plans =
 

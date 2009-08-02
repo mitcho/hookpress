@@ -18,3 +18,7 @@
 $print = print_r($_REQUEST,true);
 
 `echo '$print' >> test.log`;
+
+echo array_shift($_REQUEST);
+
+

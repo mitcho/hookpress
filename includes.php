@@ -54,7 +54,20 @@ $hookpress_actions = array(
   // TODO: ADD MORE...
 );
 
-//'comment_post'
+$hookpress_filters = array(
+  'attachment_icon'=>array('icon','ATTACHMENT'),
+  'attachment_innerHTML'=>array('attachment_html','ATTACHMENT'),
+  'content_edit_pre'=>array('content'),
+  'excerpt_edit_pre'=>array('excerpt'),
+  'get_attached_file'=>array('file','ATTACHMENT'),
+  'get_enclosed'=>array('enclosures'),
+  'get_pages'=>array('pages','arguments'),
+  'get_pung'=>array('pung_urls'),
+  
+  'the_content'=>array('content')
+  
+  // TODO: ADD MORE...
+);
 
 function hookpress_get_fields($type) {
   global $wpdb;
@@ -73,9 +86,8 @@ function hookpress_get_fields($type) {
   if ($type == 'POST' || $type == 'PARENT_POST')
     $fields[] = 'post_url';
 
-  function callback($x) {return "parent_$x";}
-  if ($type = 'PARENT_POST')
-    $fields = array_map('callback',$fields);
+  if ($type == 'PARENT_POST')
+    $fields = array_map(create_function('$x','return "parent_$x";'),$fields);
 
   return array_unique($fields);
 }
@@ -83,7 +95,7 @@ function hookpress_get_fields($type) {
 // MAGIC
 
 function hookpress_register_hooks() {
-  global $hookpress_callbacks, $hookpress_actions;
+  global $hookpress_callbacks, $hookpress_actions, $hookpress_filters;
   $hookpress_callbacks = array();
   
   if (!is_array(get_option('hookpress_webhooks')))
@@ -92,15 +104,18 @@ function hookpress_register_hooks() {
     if (count($desc) && $desc['enabled']) {
       $hookpress_callbacks[$id] = create_function('','
         $args = func_get_args();
-        hookpress_generic_action('.$id.',$args);
+        return hookpress_generic_action('.$id.',$args);
       ');
-      add_action($desc['hook'], $hookpress_callbacks[$id], HOOKPRESS_PRIORITY, count($hookpress_actions[$desc['hook']]));
+      if (isset($desc['type']) && $desc['type'] == 'filter')
+        add_filter($desc['hook'], $hookpress_callbacks[$id], HOOKPRESS_PRIORITY, count($hookpress_filters[$desc['hook']]));
+      else
+        add_action($desc['hook'], $hookpress_callbacks[$id], HOOKPRESS_PRIORITY, count($hookpress_actions[$desc['hook']]));
     }
   }
 }
 
 function hookpress_generic_action($id,$args) {
-  global $hookpress_version, $wpdb, $hookpress_actions;
+  global $hookpress_version, $wpdb, $hookpress_actions, $hookpress_filters;
   
   $webhooks = get_option('hookpress_webhooks');
   $desc = $webhooks[$id];
@@ -108,7 +123,10 @@ function hookpress_generic_action($id,$args) {
   $obj = array();
   
   // generate the expected argument names
-  $arg_names = $hookpress_actions[$desc['hook']];
+  if (isset($desc['type']) && $desc['type'] == 'filter')
+    $arg_names = $hookpress_filters[$desc['hook']];  
+  else
+    $arg_names = $hookpress_actions[$desc['hook']];
   
   foreach($args as $i => $arg) {
     $newobj = array();
@@ -172,9 +190,11 @@ function hookpress_print_webhook($id) {
   $webhooks = get_option('hookpress_webhooks');
   $desc = $webhooks[$id];
   $fields = implode('</code>, <code>',$desc['fields']);
+  if (!isset($desc['type']))
+    $desc['type'] = 'action';
   return "<tr id='$id'><td>".
   ($desc['enabled']?"<a href='#' id='on$id' style='font-size: 0.7em' class='on' title='click to turn off'>ON</a>":"<a href='#' id='off$id' style='font-size: 0.7em' class='off' title='click to turn on'>OFF</a>")
-  ."</td><td><code><span style='font-weight: bold'>$desc[hook]</span></code></td><td><code>$desc[url]</code></td><td><code>"
+  ."</td><td>$desc[type]:</td><td><code><span style='font-weight: bold'>$desc[hook]</span></code></td><td><code>$desc[url]</code></td><td><code>"
   .$fields
-  ."</code></td><td><!--<a href='#' id='edit$id' class='edit'>[edit]</a> --><a href='#' id='delete$id' class='delete'>[delete]</a></td></tr>";
+  ."</code></td><td><!-- style='width:7em'--><!--<a class='thickbox edit' title='Edit webhook' href='#TB_inline?inlineId=hookpress-new-webhook&height=330&width=500' id='edit$id'>[edit]</a> --><a href='#' id='delete$id' class='delete'>[delete]</a></td></tr>";
 }
