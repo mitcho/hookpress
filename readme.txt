@@ -7,7 +7,7 @@ Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=66G4D
 Tags: hook, filter, action, plugin, webhook, webhooks, notification, internal
 Requires at least: 2.8
 Tested up to: 2.8.2
-Stable tag: 0.1.3
+Stable tag: 0.1.4
 
 HookPress turns all of your WordPress-internal hooks into webhooks. Possible uses include generating push notifications or using non-PHP web technology to extend WordPress.
 
@@ -29,23 +29,30 @@ Upload the HookPress plugin to your blog's `wp-content/plugins/` directory and a
 
 If you have a feature request or question, please use the <a href='http://wordpress.org/tags/hookpress'>HookPress support forum</a>.
 
+== Localizations ==
+
+HookPress is now localizable. If you would like to localize HookPress, [please contact me first](mailto:hookpress@mitcho.com) to claim your language before starting to work.
+
 == Changelog ==
 
-* 0.1
-   * Initial release
-      * supports webhooks based on WP actions
-* 0.1.1
-   * Fixed namespace collision with [Yet Another Related Posts Plugin](http://mitcho.com/code/yarpp/).
-   * Minor documentation changes.
-* 0.1.2
-   * Added support for the `post_url` field
-   * Added support for `parent_*` post fields for `save_post` which are sent in case the post is a revision of a previous draft.
-   * Fixes a PHP error which displayed on install
-   * Disallowed redirects on the webhook - corrects duplicate records when used with PostBin
-* 0.1.3
-   * A small bugfix to the filters list for `save_pre`
-   * Initial support for filters with an short list of supported filters
-   * Updated `test.php` to return first parameter (to trivially support filters)
+= 0.1.4 =
+* Bugfix: hooks with ID 0 can now be deleted
+* Made HookPress fully localizable - please email before you start localizing to claim your language.
+= 0.1.3 =
+* A small bugfix to the filters list for `save_pre`
+* Initial support for filters with an short list of supported filters
+* Updated `test.php` to return first parameter (to trivially support filters)
+= 0.1.2 =
+* Added support for the `post_url` field
+* Added support for `parent_*` post fields for `save_post` which are sent in case the post is a revision of a previous draft.
+* Fixes a PHP error which displayed on install
+* Disallowed redirects on the webhook - corrects duplicate records when used with PostBin
+= 0.1.1 =
+* Fixed namespace collision with [Yet Another Related Posts Plugin](http://mitcho.com/code/yarpp/).
+* Minor documentation changes.
+= 0.1 =
+* Initial release
+   * supports webhooks based on WP actions
 
 = Future plans =
 

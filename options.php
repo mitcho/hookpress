@@ -33,11 +33,11 @@ var getFields = function getFields() {
 
 var newSubmit = function newSubmit() {
   if (!jQuery('#newfields').val()) {
-    jQuery('#newindicator').html('<small>You must select at least one field to send.</small>');
+    jQuery('#newindicator').html('<small><?php _e("You must select at least one field to send.","hookpress");?></small>');
     return;
   }
   if (!/^https?:\/\/\w+/.test(jQuery('#newurl').val())) {
-    jQuery('#newindicator').html('<small>Please enter a valid URL.</small>');
+    jQuery('#newindicator').html('<small><?php _e("Please enter a valid URL.","hookpress");?></small>');
     return;
   }
 
@@ -61,7 +61,7 @@ var newSubmit = function newSubmit() {
       if (/^ERROR/.test(html))
         jQuery('#newindicator').html(html);
       else if (!html)
-        jQuery('#newindicator').html('There was an unknown error.');
+        jQuery('#newindicator').html('<?php _e("There was an unknown error.","hookpress");?>');
       else {
         tb_remove();
         var newhook = jQuery(html);
@@ -164,9 +164,9 @@ var setEvents = function setEvents() {
 
 	<p><small><?php _e('by <a href="http://mitcho.com/">mitcho (Michael 芳貴 Erlewine)</a>','hookpress');?>. <?php _e('Follow <a href="http://twitter.com/hookpress/">HookPress</a> on Twitter.','hookpress');?></small></p>
 
-	<h3>Webhooks</h3>
+	<h3><?php _e("Webhooks","hookpress");?></h3>
 	<table id='webhooks'>
-	  <thead><tr><th colspan='3'>hook</th><th>URL</th><th>fields</th></tr></thead>
+	  <thead><tr><th colspan='3'><?php _e("hook","hookpress");?></th><th><?php _e("URL","hookpress");?></th><th><?php _e("fields","hookpress");?></th></tr></thead>
   	<tbody>
   	<?php
   	foreach (get_option('hookpress_webhooks') as $id => $desc) {
@@ -193,10 +193,10 @@ var setEvents = function setEvents() {
 <div id='hookpress-new-webhook' style='display:none;'>
 <form id='newform'>
 <table>
-<tr><td><label style='font-weight: bold' for='newhook'><?php _e("WordPress hook type:",'hookpress');?> </label></td><td><input type='radio' id='action' class='newtype' name='newtype' checked='checked'> action</input> <input type='radio' id='filter' class='newtype' name='newtype'> filter</input></td></tr>
+<tr><td><label style='font-weight: bold' for='newhook'><?php _e("WordPress hook type",'hookpress');?>: </label></td><td><input type='radio' id='action' class='newtype' name='newtype' checked='checked'> <?php _e("action","hookpress");?></input> <input type='radio' id='filter' class='newtype' name='newtype'> <?php _e("filter","hookpress");?></input></td></tr>
 <tr>
-<td><label style='font-weight: bold' for='newhook' id='action_or_filter'></label><!--<br/>
-<small><?php _e('(Currently only actions are available)','hookpress');?></small>--></td><td><select name='newhook' id='newhook'>
+<td><label style='font-weight: bold' for='newhook' id='action_or_filter'></label></td>
+<td><select name='newhook' id='newhook'>
     <?php
       $keys = array_keys($hookpress_actions);
       sort($keys);
@@ -205,9 +205,9 @@ var setEvents = function setEvents() {
       }
     ?>
   </select></td></tr>
-<tr><td style='vertical-align: top'><label style='font-weight: bold' for='newfields'><?php _e("Fields:",'hookpress');?> </label><br/><small><?php _e("Ctrl-click on Windows or Command-click on Mac to select multiple. The <code>hook</code> field with the relevant hook name is always sent.)");?></small></td><td><select style='vertical-align: top' name='newfields' id='newfields' multiple='multiple' size='8'>
+<tr><td style='vertical-align: top'><label style='font-weight: bold' for='newfields'><?php _e("Fields",'hookpress');?>: </label><br/><small><?php _e("Ctrl-click on Windows or Command-click on Mac to select multiple. The <code>hook</code> field with the relevant hook name is always sent.)");?></small></td><td><select style='vertical-align: top' name='newfields' id='newfields' multiple='multiple' size='8'>
   </select></td></tr>
-<tr><td><label style='font-weight: bold' for='newurl'><?php _e("URL:",'hookpress');?> </label></td><td><input name='newurl' id='newurl' size='40' value='http://'></input></td></tr>
+<tr><td><label style='font-weight: bold' for='newurl'><?php _e("URL",'hookpress');?>: </label></td><td><input name='newurl' id='newurl' size='40' value='http://'></input></td></tr>
 </table>
 
   <center><span id='newindicator'></span><br/>

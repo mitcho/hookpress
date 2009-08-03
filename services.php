@@ -60,9 +60,9 @@ function hookpress_ajax_set_enabled() {
 
 function hookpress_ajax_delete_hook() {
   $webhooks = get_option('hookpress_webhooks');
-  $id = $_POST['id'];
-  if (!$id)
+  if (!isset($_POST['id']))
     die("ERROR: no id given");
+  $id = $_POST['id'];
   if (!$webhooks[$id])
     die("ERROR: no webhook found for that id");
   $webhooks[$id] = array();

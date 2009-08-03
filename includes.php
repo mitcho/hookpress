@@ -192,9 +192,19 @@ function hookpress_print_webhook($id) {
   $fields = implode('</code>, <code>',$desc['fields']);
   if (!isset($desc['type']))
     $desc['type'] = 'action';
-  return "<tr id='$id'><td>".
-  ($desc['enabled']?"<a href='#' id='on$id' style='font-size: 0.7em' class='on' title='click to turn off'>ON</a>":"<a href='#' id='off$id' style='font-size: 0.7em' class='off' title='click to turn on'>OFF</a>")
-  ."</td><td>$desc[type]:</td><td><code><span style='font-weight: bold'>$desc[hook]</span></code></td><td><code>$desc[url]</code></td><td><code>"
-  .$fields
-  ."</code></td><td><!-- style='width:7em'--><!--<a class='thickbox edit' title='Edit webhook' href='#TB_inline?inlineId=hookpress-new-webhook&height=330&width=500' id='edit$id'>[edit]</a> --><a href='#' id='delete$id' class='delete'>[delete]</a></td></tr>";
+  return "<tr id='$id'>"
+  ."<td>"
+  .( $desc['enabled']
+    ? "<a href='#' id='on$id' style='font-size: 0.7em' class='on' title='"
+      .__('click to turn off',"hookpress").")'>".__('ON',"hookpress")."</a>"
+    : "<a href='#' id='off$id' style='font-size: 0.7em' class='off' title='"
+      .__('click to turn on',"hookpress")."'>".__('OFF',"hookpress")."</a>" )
+  ."</td>"
+  ."<td>"
+    .($desc['type'] == 'filter'?__('filter','hookpress'):__('action','hookpress'))
+  .":</td>"
+  ."<td><code><span style='font-weight: bold'>$desc[hook]</span></code></td>"
+  ."<td><code>$desc[url]</code></td>"
+  ."<td><code>".$fields."</code></td>"
+  ."<td><!-- style='width:7em'--><!--<a class='thickbox edit' title='Edit webhook' href='#TB_inline?inlineId=hookpress-new-webhook&height=330&width=500' id='edit$id'>[edit]</a> --><a href='#' id='delete$id' class='delete'>[".__('delete','hookpress')."]</a></td></tr>";
 }
