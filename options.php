@@ -2,10 +2,14 @@
 
 var getHooks = function getHooks() {
   var type = jQuery('.newtype:checked').attr('id');
-  if (type == 'action')
+  if (type == 'action') {
     jQuery('#action_or_filter').text('<?php _e("Action:",'hookpress');?> ');
-  if (type == 'filter')
+    jQuery('#filtermessage').hide();
+  }
+  if (type == 'filter') {
     jQuery('#action_or_filter').text('<?php _e("Filter:",'hookpress');?> ');
+    jQuery('#filtermessage').show();
+  }
 	jQuery.ajax({type:'POST',
     url:'admin-ajax.php',
     data:'action=hookpress_get_hooks&type='+type,
@@ -26,10 +30,18 @@ var getFields = function getFields() {
     data:'action=hookpress_get_fields&hook='+hook+'&type='+type,
     beforeSend:function(){jQuery('#newfields').html('<img src="../wp-content/plugins/hookpress/i/spin.gif" alt="loading..."/>')},
     success:function(html){
-      jQuery('#newfields').html(html)},
+      jQuery('#newfields').html(html)
+    },
     dataType:'html'}
 	)
 };
+
+var enforceFirst = function enforceFirst() {
+  var type = jQuery('.newtype:checked').attr('id');
+  if (type == 'action')
+    return;
+  jQuery('option.first').attr('selected','true');
+}
 
 var newSubmit = function newSubmit() {
   if (!jQuery('#newfields').val()) {
@@ -119,6 +131,7 @@ jQuery(document).ready(function(){
 var setEvents = function setEvents() {
   jQuery('.newtype').change(getHooks);
   jQuery('#newhook').change(getFields);
+  jQuery('#newfields').change(enforceFirst);
   jQuery('#newsubmit').click(newSubmit);
   jQuery('#newcancel').click(tb_remove);
   jQuery('.delete').click(function(e){
@@ -205,7 +218,7 @@ var setEvents = function setEvents() {
       }
     ?>
   </select></td></tr>
-<tr><td style='vertical-align: top'><label style='font-weight: bold' for='newfields'><?php _e("Fields",'hookpress');?>: </label><br/><small><?php _e("Ctrl-click on Windows or Command-click on Mac to select multiple. The <code>hook</code> field with the relevant hook name is always sent.)");?></small></td><td><select style='vertical-align: top' name='newfields' id='newfields' multiple='multiple' size='8'>
+<tr><td style='vertical-align: top'><label style='font-weight: bold' for='newfields'><?php _e("Fields",'hookpress');?>: </label><br/><small><?php _e("Ctrl-click on Windows or Command-click on Mac to select multiple. The <code>hook</code> field with the relevant hook name is always sent.");?></small><br/><span id='filtermessage'><small><?php _e('The first argument of a filter must always be sent and should be returned by the webhook, with modification.','hookpress');?></small></span></td><td><select style='vertical-align: top' name='newfields' id='newfields' multiple='multiple' size='8'>
   </select></td></tr>
 <tr><td><label style='font-weight: bold' for='newurl'><?php _e("URL",'hookpress');?>: </label></td><td><input name='newurl' id='newurl' size='40' value='http://'></input></td></tr>
 </table>

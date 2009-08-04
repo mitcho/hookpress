@@ -17,6 +17,10 @@ function hookpress_ajax_get_fields() {
 
 	header("Content-Type: text/html; charset=UTF-8");
 
+  if ($_POST['type'] == 'filter') {
+    $first = array_shift($fields);
+    echo "<option value='$first' selected='selected' class='first'>$first</option>";
+  }
 	sort($fields);
 	foreach ($fields as $field) {
     echo "<option value='$field'>$field</option>";

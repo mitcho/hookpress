@@ -174,7 +174,7 @@ function hookpress_generic_action($id,$args) {
     // $snoopy->proxy_host = "my.proxy.host";
     // $snoopy->proxy_port = "8080";
     // TODO: add authentication settings.
-    // snoopy->user = "me";
+    // $snoopy->user = "me";
     // $snoopy->pass = "p@ssw0rd";
     $snoopy->maxredirs = 0;
     $snoopy->agent = "HookPress/$hookpress_version (compatible; WordPress ".$GLOBALS['wp_version']."; +http://mitcho.com/code/hookpress/)";
@@ -185,6 +185,8 @@ function hookpress_generic_action($id,$args) {
     }
   }
 }
+
+// OPTIONS
 
 function hookpress_print_webhook($id) {
   $webhooks = get_option('hookpress_webhooks');
@@ -205,6 +207,6 @@ function hookpress_print_webhook($id) {
   .":</td>"
   ."<td><code><span style='font-weight: bold'>$desc[hook]</span></code></td>"
   ."<td><code>$desc[url]</code></td>"
-  ."<td><code>".$fields."</code></td>"
+  ."<td><code ".($desc['type'] == 'filter' ? " style='background-color:#ECEC9D' title='".__('The data in the highlighted field is expected to be returned from the webhook, with modification.','hookpress')."'":"").">".$fields."</code></td>"
   ."<td><!-- style='width:7em'--><!--<a class='thickbox edit' title='Edit webhook' href='#TB_inline?inlineId=hookpress-new-webhook&height=330&width=500' id='edit$id'>[edit]</a> --><a href='#' id='delete$id' class='delete'>[".__('delete','hookpress')."]</a></td></tr>";
 }
