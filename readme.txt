@@ -7,7 +7,7 @@ Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=66G4D
 Tags: hook, filter, action, plugin, webhook, webhooks, notification, internal
 Requires at least: 2.8
 Tested up to: 2.8.2
-Stable tag: 0.1.5
+Stable tag: 0.1.6
 
 HookPress turns all of your WordPress-internal hooks into webhooks. Possible uses include generating push notifications or using non-PHP web technology to extend WordPress.
 
@@ -29,14 +29,22 @@ Upload the HookPress plugin to your blog's `wp-content/plugins/` directory and a
 
 If you have a feature request or question, please use the <a href='http://wordpress.org/tags/hookpress'>HookPress support forum</a>.
 
+= How does HookPress affect performance? =
+
+HookPress currently makes requests synchronously so can measurably affect performance. I highly recommend using a caching plugin such as [WP-SuperCache](http://ocaoimh.ie/wp-super-cache/) to stem the performance hit. If your filters' results are time-sensitive or dependent on external data sources as well, make sure to set an appropriate cache expiration time.
+
 == Localizations ==
 
 HookPress is now localizable. If you would like to localize HookPress, [please contact me first](mailto:hookpress@mitcho.com) to claim your language before starting to work.
 
 == Changelog ==
 
+= 0.1.6 =
+* Added another batch of actions. (Still no actions with no arguments, though... something to consider.)
+* Fixed hooks which referred to the users and links tables.
 = 0.1.5 =
 * Now enforces sending the first field in filters and highlights the first field.
+* Added FAQ note on performance concerns and caching.
 = 0.1.4 =
 * Bugfix: hooks with ID 0 can now be deleted
 * Made HookPress fully localizable - please email before you start localizing to claim your language.

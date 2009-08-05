@@ -49,10 +49,62 @@ $hookpress_actions = array(
   
   'add_link'=>array('LINK'),
   'delete_link'=>array('LINK'),
-  'edit_link'=>array('LINK')
+  'edit_link'=>array('LINK'),
 
+//  'atom_entry'=>array(),
+//  'atom_head'=>array(),
+//  'atom_ns'=>array(),
+  'commentrss2_item'=>array('COMMENT','POST'),
+//  'rdf_header'=>array(),
+//  'rdf_item'=>array(),
+//  'rdf_ns'=>array(),
+//  'rss_head'=>array(),
+//  'rss_item'=>array(),
+//  'rss2_head'=>array(),
+//  'rss2_item'=>array(),
+//  'rss2_ns'=>array(),
+
+  'comment_form'=>array('POST'),
+//  'do_robots'=>array(),
+//  'do_robotstxt'=>array(),
+//  'do_robotstxt'=>array(),
+  'get_footer'=>array('footer_name'),
+  'get_header'=>array('header_name'),
+  'switch_theme'=>array('theme_name'),
+//  'template_redirect'=>array(),
+//  'wp_footer'=>array(),
+//  'wp_head'=>array(),
+//  'wp_meta'=>array(),
+//  'wp_print_scripts'=>array(),
+//  'activity_box_end'=>array(),
+//  'add_category_form_pre'=>array(),
+//  'admin_head'=>array(),
+//  'admin_init'=>array(),
+//  'admin_footer'=>array(),
+//  'admin_print_scripts'=>array(),
+//  'admin_print_styles'=>array(),
+//  'admin_print_scripts-(page_hook)'=>array(),  
+  'check_passwords'=>array('user_login','pass1','pass2'),
+//  'dbx_post_advanced'=>array(),
+//  'dbx_post_sidebar'=>array(),
+////  'dbx_post_advanced'=>array(), // these aren't being used???
+////  'dbx_post_sidebar'=>array(),
+  'delete_user'=>array('USER'),
+  'edit_category_forum'=>array('CATEGORY'),
+  'edit_category_forum_pre'=>array('CATEGORY')
   // TODO: ADD MORE...
 );
+
+//foreach ($wp_rewrite->feeds as $feedname) {
+//  $hookpress_actions["do_feed_$feedname"] = array('is_comment_feed');
+//}
+// TODO: add more dynamically later:
+// activate_(plugin name)
+// admin_head-(page hook)
+// admin_print_scripts-(page_hook)
+// admin_print_styles-(page_hook)
+// deactivate_(plugin file name)
+
 
 $hookpress_filters = array(
   'attachment_icon'=>array('icon','ATTACHMENT'),
@@ -75,7 +127,9 @@ function hookpress_get_fields($type) {
                'PARENT_POST' => array($wpdb->posts),
                'COMMENT' => array($wpdb->comments),
                'CATEGORY' => array($wpdb->terms,$wpdb->term_taxonomy),
-               'ATTACHMENT' => array($wpdb->posts));
+               'ATTACHMENT' => array($wpdb->posts),
+               'LINK' => array($wpdb->links),
+               'USER' => array($wpdb->users));
   $tables = $map[$type];
   $fields = array();
   foreach ($tables as $table) {
@@ -133,7 +187,6 @@ function hookpress_generic_action($id,$args) {
     switch($arg_names[$i]) {
       case 'POST':
       case 'ATTACHMENT':
-      case 'LINK':
         $newobj = get_post($arg,ARRAY_A);
 
         if ($arg_names[$i] == 'POST')
@@ -153,6 +206,12 @@ function hookpress_generic_action($id,$args) {
         break;
       case 'CATEGORY':
         $newobj = $wpdb->get_row("select * from $wpdb->categories where cat_ID = $arg",ARRAY_A);
+        break;
+      case 'USER':
+        $newobj = $wpdb->get_row("select * from $wpdb->users where ID = $arg",ARRAY_A);
+        break;
+      case 'LINK':
+        $newobj = $wpdb->get_row("select * from $wpdb->links where link_id = $arg",ARRAY_A);
         break;
       default:
         $newobj[$arg_names[$i]] = $arg;
