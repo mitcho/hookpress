@@ -2,6 +2,7 @@
 
 require('intl.php');
 require('services.php');
+require('hooks.php');
 
 // OPTIONS
 
@@ -9,117 +10,6 @@ $hookpress_value_options =
   array('version' => $hookpress_version,
         'webhooks' => array()
         );
-
-// ACTION TYPES
-
-$hookpress_actions = array(
-  'add_attachment'=>array('ATTACHMENT'),
-  'add_category'=>array('CATEGORY'),
-  'clean_post_cache'=>array('POST'),
-  'create_category'=>array('CATEGORY'),
-  'delete_attachment'=>array('ATTACHMENT'),
-  'delete_category'=>array('CATEGORY'),
-  'delete_post'=>array('POST'),
-  'deleted_post'=>array('POST'),
-  'edit_attachment'=>array('ATTACHMENT'),
-  'edit_category'=>array('CATEGORY'),
-  'edit_post'=>array('POST'),
-  'pre_post_update'=>array('POST'),
-  'private_to_publish'=>array('POST'), // TODO: check if this is really the post ID
-  'publish_page'=>array('POST'),
-  'publish_phone'=>array('POST'),
-  'publish_post'=>array('POST'),
-  'save_post'=>array('POST', 'PARENT_POST'),
-  // TODO: make sure the original post stuff is working
-  'wp_insert_post'=>array('POST'),
-  'xmlrpc_publish_post'=>array('POST'),
-
-  'comment_closed'=>array('POST'),
-  'comment_id_not_found'=>array('POST'),
-  'comment_flood_trigger'=>array('time_lastcomment','time_newcomment'),
-  'comment_on_draft'=>array('POST'),
-  'comment_post'=>array('COMMENT','approval'),
-  'edit_comment'=>array('COMMENT'),
-  'delete_comment'=>array('COMMENT'),
-  'pingback_post'=>array('COMMENT'),
-  'pre_ping'=>array('COMMENT'),
-  'traceback_post'=>array('COMMENT'),
-  'wp_blacklist_check'=>array('comment_author','comment_author_email','comment_author_url','comment_content','comment_author_IP','comment_agent'),
-  'wp_set_comment_status'=>array('COMMENT','status'),
-  
-  'add_link'=>array('LINK'),
-  'delete_link'=>array('LINK'),
-  'edit_link'=>array('LINK'),
-
-//  'atom_entry'=>array(),
-//  'atom_head'=>array(),
-//  'atom_ns'=>array(),
-  'commentrss2_item'=>array('COMMENT','POST'),
-//  'rdf_header'=>array(),
-//  'rdf_item'=>array(),
-//  'rdf_ns'=>array(),
-//  'rss_head'=>array(),
-//  'rss_item'=>array(),
-//  'rss2_head'=>array(),
-//  'rss2_item'=>array(),
-//  'rss2_ns'=>array(),
-
-  'comment_form'=>array('POST'),
-//  'do_robots'=>array(),
-//  'do_robotstxt'=>array(),
-//  'do_robotstxt'=>array(),
-  'get_footer'=>array('footer_name'),
-  'get_header'=>array('header_name'),
-  'switch_theme'=>array('theme_name'),
-//  'template_redirect'=>array(),
-//  'wp_footer'=>array(),
-//  'wp_head'=>array(),
-//  'wp_meta'=>array(),
-//  'wp_print_scripts'=>array(),
-//  'activity_box_end'=>array(),
-//  'add_category_form_pre'=>array(),
-//  'admin_head'=>array(),
-//  'admin_init'=>array(),
-//  'admin_footer'=>array(),
-//  'admin_print_scripts'=>array(),
-//  'admin_print_styles'=>array(),
-//  'admin_print_scripts-(page_hook)'=>array(),  
-  'check_passwords'=>array('user_login','pass1','pass2'),
-//  'dbx_post_advanced'=>array(),
-//  'dbx_post_sidebar'=>array(),
-////  'dbx_post_advanced'=>array(), // these aren't being used???
-////  'dbx_post_sidebar'=>array(),
-  'delete_user'=>array('USER'),
-  'edit_category_forum'=>array('CATEGORY'),
-  'edit_category_forum_pre'=>array('CATEGORY')
-  // TODO: ADD MORE...
-);
-
-//foreach ($wp_rewrite->feeds as $feedname) {
-//  $hookpress_actions["do_feed_$feedname"] = array('is_comment_feed');
-//}
-// TODO: add more dynamically later:
-// activate_(plugin name)
-// admin_head-(page hook)
-// admin_print_scripts-(page_hook)
-// admin_print_styles-(page_hook)
-// deactivate_(plugin file name)
-
-
-$hookpress_filters = array(
-  'attachment_icon'=>array('icon','ATTACHMENT'),
-  'attachment_innerHTML'=>array('attachment_html','ATTACHMENT'),
-  'content_edit_pre'=>array('content'),
-  'excerpt_edit_pre'=>array('excerpt'),
-  'get_attached_file'=>array('file','ATTACHMENT'),
-  'get_enclosed'=>array('enclosures'),
-  'get_pages'=>array('pages','arguments'),
-  'get_pung'=>array('pung_urls'),
-  
-  'the_content'=>array('content')
-  
-  // TODO: ADD MORE...
-);
 
 function hookpress_get_fields($type) {
   global $wpdb;
@@ -129,11 +19,17 @@ function hookpress_get_fields($type) {
                'CATEGORY' => array($wpdb->terms,$wpdb->term_taxonomy),
                'ATTACHMENT' => array($wpdb->posts),
                'LINK' => array($wpdb->links),
-               'USER' => array($wpdb->users));
+               'USER' => array($wpdb->users),
+               'TAG_OBJ' => array($wpdb->terms,$wpdb->term_taxonomy),
+               'USER_OBJ' => array($wpdb->users),
+               'OLD_USER_OBJ' => array($wpdb->users));
   $tables = $map[$type];
   $fields = array();
   foreach ($tables as $table) {
-    $fields = array_merge($fields,$wpdb->get_col("show columns in $table"));
+    if (is_array($table))
+      $fields = array_merge($fields,$table);
+    else
+      $fields = array_merge($fields,$wpdb->get_col("show columns in $table"));
   }
 
   // if it's a POST, we have a URL for it as well.
@@ -143,10 +39,20 @@ function hookpress_get_fields($type) {
   if ($type == 'PARENT_POST')
     $fields = array_map(create_function('$x','return "parent_$x";'),$fields);
 
+  if ($type == 'OLD_USER_OBJ')
+    $fields = array_map(create_function('$x','return "old_$x";'),$fields);
+
   return array_unique($fields);
 }
 
 // MAGIC
+
+function hookpress_obj_to_array($object) {
+  $array = array();
+  foreach($object as $member=>$data)
+    $array[$member] = $data;
+  return $array;
+}
 
 function hookpress_register_hooks() {
   global $hookpress_callbacks, $hookpress_actions, $hookpress_filters;
@@ -213,6 +119,13 @@ function hookpress_generic_action($id,$args) {
       case 'LINK':
         $newobj = $wpdb->get_row("select * from $wpdb->links where link_id = $arg",ARRAY_A);
         break;
+      case 'TAG_OBJ':
+        $newobj = hookpress_obj_to_array($arg);
+        break;
+      case 'USER_OBJ':
+        $newobj = hookpress_obj_to_array($arg);
+      case 'OLD_USER_OBJ':
+        $newobj = array_map(create_function('$x','return "old_$x";'),hookpress_obj_to_array($arg));
       default:
         $newobj[$arg_names[$i]] = $arg;
     }
