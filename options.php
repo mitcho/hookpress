@@ -126,6 +126,14 @@ jQuery(document).ready(function(){
   getHooks();
   // set event handler
   setEvents();
+
+  // setup version check
+  var version = jQuery('#hookpress-version').html();
+  var json = <?php echo hookpress_check_version_json($hookpress_version); ?>;
+  if (json.result == 'newbeta')
+      jQuery('#hookpress-version').addClass('updated').html(<?php echo "'<p>".str_replace('VERSION',"'+json.beta.version+'",str_replace('<A>',"<a href=\"'+json.beta.url+'\">",addslashes(__("There is a new beta (VERSION) of HookPress. You can <A>download it here</a> at your own risk.","hookpress"))))."</p>'"?>).show();
+  if (json.result == 'new')
+      jQuery('#hookpress-version').addClass('updated').html(<?php echo "'<p>".str_replace('VERSION',"'+json.current.version+'",str_replace('<A>',"<a href=\"'+json.current.url+'\">",addslashes(__("There is a new version (VERSION) of HookPress available! You can <A>download it here</a>.","hookpress"))))."</p>'"?>).show();
 });
 
 var setEvents = function setEvents() {

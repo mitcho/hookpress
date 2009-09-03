@@ -149,11 +149,10 @@ $hookpress_actions = array(
 // wp_ajax_(action)
 
 
-
-
 // FILTERS:
 
 $hookpress_filters = array(
+// Post, Page, and Attachment Filters: db read
   'attachment_icon'=>array('icon','ATTACHMENT'),
   'attachment_innerHTML'=>array('attachment_html','ATTACHMENT'),
   'content_edit_pre'=>array('content'),
@@ -187,7 +186,52 @@ $hookpress_filters = array(
   'wp_get_attachment_thumb_url'=>array('url','POST'),
   'wp_get_attachment_url'=>array('url','POST'),
   'wp_mime_type_icon'=>array('icon','mime','POST'),
-  'wp_title'=>array('title','sep','seplocation')
+  'wp_title'=>array('title','sep','seplocation'),
+  
+// Post, Page, and Attachment Filters: db write
+  'add_ping'=>array('new'),
+//  'attachment_max_dims'=>array('ARR_max_dims'),
+//  'category_save_pre'=>array(), // unused?
+//  'comment_status_pre'=>array(), // unused?
+//  'content_filtered_save_pre'=>array(), // unused?
+//  'content_save_pre'=>array('description'),
+//  'excerpt_save_pre'=>array(), // unused?
+//  'name_save_pre'=>array(), // unused?
+  'phone_content'=>array('content'),
+//  'ping_status_pre'=>array(), // unused?
+//  'post_mime_type_pre'=>array(), // unused?
+//  'status_save_pre'=>array(), // unused?
+//  'thumbnail_filename'=>array(), // unused?
+//  'wp_thumbnail_creation_size_limit'=>array(), // unused?
+//  'wp_thumbnail_max_side_length'=>array(), // unused?
+//  'title_save_pre'=>array(), // unused?
+  'update_attached_file'=>array('file_path','ATTACHMENT'),
+  'wp_delete_file'=>array('file_name'),
+//  'wp_generate_attachment_metadata'=>array('ARR_of_metadata'),
+//  'wp_update_attachment_metadata'=>array('ARR_of_metadata','ATTACHMENT'),
+
+  // Comment, Trackback, and Ping Filters: db reads
+  'comment_excerpt'=>array('comment_excerpt'),
+//  'comment_flood_filter'=>array('BOOL_flood_dye','time_lastcomment','time_newcomment'),
+//  'comment_post_redirect'=>array('location','COMMENT_OBJ'),
+  'comment_text'=>array('comment_text'),
+  'comment_text_rss'=>array('comment_text'),
+//  'comments_array'=>array('ARR_comments','POST'),
+  'comments_number'=>array('output','number'),
+//  'get_comment_number'=>array('output'), // unused?
+  'get_comment_ID'=>array('comment_ID'),
+  'get_comment_text'=>array('comment_text'),
+  'get_comment_type'=>array('comment_type'),
+  'get_comments_number'=>array('count'),
+  'post_comments_feed_link'=>array('url'),
+  
+  // Comment, Trackback, and Ping Filters: db writes
+  'comment_save_pre'=>array('comment_text'),
+  'pre_comment_approved'=>array('approved'), // '0,1,spam'
+//  'preprocess_comment'=>array('COMMENT_ARR'),
+//  'wp_insert_post_data'=>array('POST_DATA_ARR'),
+  'pre_comment_content'=>array('comment_text')
+  
   
   // TODO: ADD MORE...
 );

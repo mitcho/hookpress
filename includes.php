@@ -45,6 +45,42 @@ function hookpress_get_fields($type) {
   return array_unique($fields);
 }
 
+function hookpress_print_webhook($id) {
+  $webhooks = get_option('hookpress_webhooks');
+  $desc = $webhooks[$id];
+  $fields = implode('</code>, <code>',$desc['fields']);
+  if (!isset($desc['type']))
+    $desc['type'] = 'action';
+  return "<tr id='$id'>"
+  ."<td>"
+  .( $desc['enabled']
+    ? "<a href='#' id='on$id' style='font-size: 0.7em' class='on' title='"
+      .__('click to turn off',"hookpress").")'>".__('ON',"hookpress")."</a>"
+    : "<a href='#' id='off$id' style='font-size: 0.7em' class='off' title='"
+      .__('click to turn on',"hookpress")."'>".__('OFF',"hookpress")."</a>" )
+  ."</td>"
+  ."<td>"
+    .($desc['type'] == 'filter'?__('filter','hookpress'):__('action','hookpress'))
+  .":</td>"
+  ."<td><code><span style='font-weight: bold'>$desc[hook]</span></code></td>"
+  ."<td><code>$desc[url]</code></td>"
+  ."<td><code ".($desc['type'] == 'filter' ? " style='background-color:#ECEC9D' title='".__('The data in the highlighted field is expected to be returned from the webhook, with modification.','hookpress')."'":"").">".$fields."</code></td>"
+  ."<td><!-- style='width:7em'--><!--<a class='thickbox edit' title='Edit webhook' href='#TB_inline?inlineId=hookpress-new-webhook&height=330&width=500' id='edit$id'>[edit]</a> --><a href='#' id='delete$id' class='delete'>[".__('delete','hookpress')."]</a></td></tr>";
+}
+
+function hookpress_check_version_json($version) {
+  include_once(ABSPATH . WPINC . '/class-snoopy.php');
+  if (class_exists('Snoopy')) {
+    $snoopy = new Snoopy;
+    $snoopy->referer = get_bloginfo('siteurl');
+    $result = $snoopy->fetch("http://mitcho.com/code/hookpress/checkversion.php?version=$version");
+    if ($result) {
+      return $snoopy->results;
+    }
+  }
+  return '{}';
+}
+
 // MAGIC
 
 function hookpress_obj_to_array($object) {
@@ -156,29 +192,4 @@ function hookpress_generic_action($id,$args) {
       return $snoopy->results;
     }
   }
-}
-
-// OPTIONS
-
-function hookpress_print_webhook($id) {
-  $webhooks = get_option('hookpress_webhooks');
-  $desc = $webhooks[$id];
-  $fields = implode('</code>, <code>',$desc['fields']);
-  if (!isset($desc['type']))
-    $desc['type'] = 'action';
-  return "<tr id='$id'>"
-  ."<td>"
-  .( $desc['enabled']
-    ? "<a href='#' id='on$id' style='font-size: 0.7em' class='on' title='"
-      .__('click to turn off',"hookpress").")'>".__('ON',"hookpress")."</a>"
-    : "<a href='#' id='off$id' style='font-size: 0.7em' class='off' title='"
-      .__('click to turn on',"hookpress")."'>".__('OFF',"hookpress")."</a>" )
-  ."</td>"
-  ."<td>"
-    .($desc['type'] == 'filter'?__('filter','hookpress'):__('action','hookpress'))
-  .":</td>"
-  ."<td><code><span style='font-weight: bold'>$desc[hook]</span></code></td>"
-  ."<td><code>$desc[url]</code></td>"
-  ."<td><code ".($desc['type'] == 'filter' ? " style='background-color:#ECEC9D' title='".__('The data in the highlighted field is expected to be returned from the webhook, with modification.','hookpress')."'":"").">".$fields."</code></td>"
-  ."<td><!-- style='width:7em'--><!--<a class='thickbox edit' title='Edit webhook' href='#TB_inline?inlineId=hookpress-new-webhook&height=330&width=500' id='edit$id'>[edit]</a> --><a href='#' id='delete$id' class='delete'>[".__('delete','hookpress')."]</a></td></tr>";
 }

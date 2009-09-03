@@ -6,8 +6,8 @@ Plugin URI: http://mitcho.com/code/yarpp/
 Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=66G4DATK4999L&item_name=mitcho%2ecom%2fcode%2fhookpress%3a%20donate%20to%20Michael%20Yoshitaka%20Erlewine&no_shipping=0&no_note=1&tax=0&currency_code=USD&lc=US&charset=UTF%2d8
 Tags: hook, filter, action, plugin, webhook, webhooks, notification, internal
 Requires at least: 2.8
-Tested up to: 2.8.2
-Stable tag: 0.1.7
+Tested up to: 2.9.9
+Stable tag: 0.1.8
 
 HookPress turns all of your WordPress-internal hooks into webhooks. Possible uses include generating push notifications or using non-PHP web technology to extend WordPress.
 
@@ -39,6 +39,10 @@ HookPress is now localizable. If you would like to localize HookPress, [please c
 
 == Changelog ==
 
+= 0.1.8 =
+* Added more filters—now covers basic + comment filters
+* Marking as compatible through 2.9.9, because it should be.
+* Added version checking and beta offers to the options screen.
 = 0.1.7 =
 * Now supports basically all actions. (Still no actions with no arguments.)
 * Added more filter options—now covers all basic database read filters.
