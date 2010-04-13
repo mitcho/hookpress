@@ -1,5 +1,5 @@
 === HookPress ===
-Contributors: mitchoyoshitaka
+Contributors: mitchoyoshitaka, automattic
 Author: mitcho (Michael Yoshitaka Erlewine)
 Author URI: http://mitcho.com/
 Plugin URI: http://mitcho.com/code/yarpp/
