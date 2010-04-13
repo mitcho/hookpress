@@ -2,6 +2,8 @@
 
 // ACTIONS:
 
+global $hookpress_actions, $hookpress_filters;
+
 $hookpress_actions = array(
   'add_attachment'=>array('ATTACHMENT'),
   'add_category'=>array('CATEGORY'),
@@ -134,6 +136,8 @@ $hookpress_actions = array(
   // TODO: ADD MORE...
 );
 
+$hookpress_actions = apply_filters( 'hookpress_actions', $hookpress_actions );
+
 //foreach ($wp_rewrite->feeds as $feedname) {
 //  $hookpress_actions["do_feed_$feedname"] = array('is_comment_feed');
 //}
@@ -235,3 +239,5 @@ $hookpress_filters = array(
   
   // TODO: ADD MORE...
 );
+
+$hookpress_filters = apply_filters( 'hookpress_filters', $hookpress_filters );

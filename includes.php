@@ -25,11 +25,11 @@ function hookpress_get_fields($type) {
                'OLD_USER_OBJ' => array($wpdb->users));
   $tables = $map[$type];
   $fields = array();
-  foreach ($tables as $table) {
+  foreach ( (array) $tables as $table) {
     if (is_array($table))
       $fields = array_merge($fields,$table);
     else
-      $fields = array_merge($fields,$wpdb->get_col("show columns in $table"));
+      $fields = array_merge($fields,$wpdb->get_col("show columns from $table"));
   }
 
   // if it's a POST, we have a URL for it as well.
@@ -45,27 +45,185 @@ function hookpress_get_fields($type) {
   return array_unique($fields);
 }
 
-function hookpress_print_webhook($id) {
-  $webhooks = get_option('hookpress_webhooks');
+function hookpress_print_edit_webhook( $id ){
+?>
+<?php
+	global $wpdb, $hookpress_actions, $hookpress_filters;
+	
+	$webhooks = hookpress_get_hooks( );
   $desc = $webhooks[$id];
-  $fields = implode('</code>, <code>',$desc['fields']);
-  if (!isset($desc['type']))
-    $desc['type'] = 'action';
-  return "<tr id='$id'>"
-  ."<td>"
-  .( $desc['enabled']
-    ? "<a href='#' id='on$id' style='font-size: 0.7em' class='on' title='"
-      .__('click to turn off',"hookpress").")'>".__('ON',"hookpress")."</a>"
-    : "<a href='#' id='off$id' style='font-size: 0.7em' class='off' title='"
-      .__('click to turn on',"hookpress")."'>".__('OFF',"hookpress")."</a>" )
-  ."</td>"
-  ."<td>"
-    .($desc['type'] == 'filter'?__('filter','hookpress'):__('action','hookpress'))
-  .":</td>"
-  ."<td><code><span style='font-weight: bold'>$desc[hook]</span></code></td>"
-  ."<td><code>$desc[url]</code></td>"
-  ."<td><code ".($desc['type'] == 'filter' ? " style='background-color:#ECEC9D' title='".__('The data in the highlighted field is expected to be returned from the webhook, with modification.','hookpress')."'":"").">".$fields."</code></td>"
-  ."<td><!-- style='width:7em'--><!--<a class='thickbox edit' title='Edit webhook' href='#TB_inline?inlineId=hookpress-new-webhook&height=330&width=500' id='edit$id'>[edit]</a> --><a href='#' id='delete$id' class='delete'>[".__('delete','hookpress')."]</a></td></tr>";
+  	
+  if ($desc['type'] == 'action')
+    $hooks = array_keys($hookpress_actions);	
+  if ($desc['type'] == 'filter')
+    $hooks = array_keys($hookpress_filters);
+?>
+<div id='hookpress-webhook' style='display:block;'>
+<form id='editform'>
+<input type="hidden" name="edit-hook-id" id="edit-hook-id" value="<?php echo $id ?>" />
+<input type="hidden" name="enabled" id="enabled" value="<?php echo $desc['enabled']; ?>" />
+<table>
+<tr><td><label style='font-weight: bold' for='edithook'><?php _e("WordPress hook type",'hookpress');?>: </label></td>
+<td><input type='radio' id='action' class='newtype' name='newtype' checked='checked'> <?php _e("action","hookpress");?></input> 
+<input type='radio' id='filter' class='newtype' name='newtype'> <?php _e("filter","hookpress");?></input></td></tr>
+<tr>
+<td><label style='font-weight: bold' for='edithook' id='action_or_filter'>
+<?php
+if ($desc['type'] == 'action')
+	echo 'Action:';
+if ($desc['type'] == 'filter')
+	echo 'Filter:';
+?>
+</label></td>
+<td><select name='edithook' id='edithook'>
+    <?php  	
+      sort($hooks);
+      foreach ($hooks as $hook) {
+      	$selected = ($hook == $desc['hook'])?'selected="true"':'';
+		$hook = esc_html( $hook );
+        echo "<option value='$hook' $selected>$hook</option>";
+      }
+      $nonce_submit = "<input type='hidden' id='submit-nonce' name='submit-nonce' value='" . wp_create_nonce( 'submit-webhook') . "' />";
+    ?>
+  </select></td></tr>
+<tr><td style='vertical-align: top'><label style='font-weight: bold' for='editfields'><?php _e("Fields",'hookpress');?>: </label>
+<br/>
+<small><?php _e("Ctrl-click on Windows or Command-click on Mac to select multiple. The <code>hook</code> field with the relevant hook name is always sent.");?></small>
+<br/>
+<span id='filtermessage'><small><?php _e('The first argument of a filter must always be sent and should be returned by the webhook, with modification.','hookpress');?></small></span>
+</td>
+<td>
+<select style='vertical-align: top' name='editfields' id='editfields' multiple='multiple' size='8'>
+<?php
+	global $wpdb, $hookpress_actions, $hookpress_filters;
+  if ($desc['type'] == 'action')
+    $args = $hookpress_actions[$desc['hook']];
+  if ($desc['type'] == 'filter')
+    $args = $hookpress_filters[$desc['hook']];
+    
+$fields = array();
+  foreach ($args as $arg) {
+    if (ereg('[A-Z]+',$arg))
+      $fields = array_merge($fields,hookpress_get_fields($arg));
+    else
+      $fields[] = $arg;
+  }
+  
+  if ($desc['type'] == 'filter') {
+    $first = array_shift($fields);
+    $first = esc_html( $first );
+    echo "<option value='$first' selected='selected' class='first'>$first</option>";
+  }
+	sort($fields);
+	foreach ($fields as $field) {
+		$selected = '';
+		foreach($desc['fields'] as $cmp){
+			if($cmp==$field){
+				$selected = 'selected="true"';
+			}
+		}
+	$field = esc_html( $field );
+    echo "<option value='$field' $selected>$field</option>";
+  }
+  $desc['url'] = esc_html( $desc['url'] );
+?></select></td></tr>
+<tr><td><label style='font-weight: bold' for='newurl'><?php _e("URL",'hookpress');?>: </label></td>
+<td><input name='editurl' id='editurl' size='40' value="<?php echo $desc['url']; ?>"></input></td></tr>
+</table>
+<?php  echo $nonce_submit; ?>
+  <center><span id='editindicator'></span><br/>
+  <input type='button' class='button' id='editsubmit' value='<?php _e('Save webhook','hookpress');?>'/>
+  <input type='button' class='button' id='editcancel' value='<?php _e('Cancel');?>'/></center>
+
+</form>
+</div>
+<?php
+}
+
+function hookpress_print_webhook_row( $id ) {
+#  $webhooks = get_option('hookpress_webhooks');
+	$webhooks = hookpress_get_hooks( );
+  $desc = $webhooks[$id];
+
+	if( !empty( $desc ) ):
+	
+	$is_active = $desc['enabled'];
+	$html_safe['id'] = esc_html( $id );
+
+	if ( $is_active ) :
+		$nonce_action = "<input type='hidden' id='action-nonce-{$html_safe['id']}' name='action-nonce-{$html_safe['id']}' value='" . wp_create_nonce( 'deactivate-webhook-' . $html_safe['id'] ) . "' />";
+		$action = '<a href="#" id="on'. $html_safe['id'] . '" title="' . __('Deactivate this webhook') . '" class="on">' . __('Deactivate') . '</a>';
+	else :
+		$nonce_action = "<input type='hidden' id='action-nonce-{$html_safe['id']}' name='action-nonce-{$html_safe['id']}' value='" . wp_create_nonce( 'activate-webhook-' . $html_safe['id'] ) . "' />";
+#		$action = '<a href="#'. $nonce_action . '" id="off'. $html_safe['id'] . '" title="' . __('Activate this webhook') . '" class="off">' . __('Activate') . '</a>';
+		$action = '<a href="#" id="off'. $html_safe['id'] . '" title="' . __('Activate this webhook') . '" class="off">' . __('Activate') . '</a>';
+	endif;
+
+	$nonce_delete = "<input type='hidden' id='delete-nonce-{$html_safe['id']}' name='delete-nonce-{$html_safe['id']}' value='" . wp_create_nonce( 'delete-webhook-' . $html_safe['id'] ) . "' />";
+	$delete = '<a href="#" id="delete'. $html_safe['id'] . '" title="' . __('Delete this webhook') . '" class="delete">' . __('Delete') . '</a>';
+	if( count( $desc['fields'] ) > 1 ) {
+		$desc['fields'] = array_map( 'esc_html', $desc['fields'] );
+		$fields = implode('</code>, <code>', $desc['fields'] );
+	} else
+		$fields = esc_html( $desc['fields'][0] );
+		
+	$edit = '<a href="#TB_inline?inlineId=hookpress-webhook&height=330&width=500" id="edit'. $html_safe['id'] . '" title="' . __('Edit this webhook') . '" class="thickbox edit">' . __('Edit') . '</a>';
+	
+//	$action_count = count($actions);
+	$style = $desc['enabled'] ? '' : 'style="background-color:#EEEEEE;"';
+
+	$html_safe['hook'] = esc_html( $desc['hook'] );
+	$html_safe['url'] = esc_html( $desc['url'] );
+
+	echo "
+<tr id='$id' $style>
+	<td class='webhook-title'><strong>{$html_safe['hook']}</strong>
+	<div class='row-actions'>$nonce_action $nonce_delete<span class='edit'>$edit | <span class='delete'>$delete | </span><span class='action'>$action</span></div></td>
+	<td class='desc'><p>{$html_safe['url']}</p></td>
+	<td class='desc'><code ".($desc['type'] == 'filter' ? " style='background-color:#ECEC9D' title='".__('The data in the highlighted field is expected to be returned from the webhook, with modification.','hookpress')."'":"").">$fields</code></td>
+</tr>\n";
+	endif;
+}
+
+function hookpress_print_webhooks_table() {
+	global $page;
+	$webhooks = null;
+#	$webhooks = get_option('hookpress_webhooks');
+	$webhooks = hookpress_get_hooks( );
+?>
+<table class="widefat" cellspacing="0" id="webhooks">
+	<thead>
+	<tr>
+		<th scope="col" class="manage-column" style="width:15%"><?php _e("Hook","hookpress");?></th>
+		<th scope="col" class="manage-column" style="width:25%"><?php _e("URL","hookpress");?></th>
+		<th scope="col" class="manage-column"><?php _e("Fields","hookpress");?></th>
+	</tr>
+	</thead>
+
+	<tfoot>
+	<tr>
+		<th scope="col" class="manage-column"><?php _e("Hook","hookpress");?></th>
+		<th scope="col" class="manage-column"><?php _e("URL","hookpress");?></th>
+		<th scope="col" class="manage-column"><?php _e("Fields","hookpress");?></th>
+	</tr>
+	</tfoot>
+
+	<tbody class="webhooks">
+<?php
+
+	if ( !empty($webhooks) ) :
+	
+	foreach ( (array)$webhooks as $id => $desc) :
+		
+		if( !empty( $desc ) ):		
+			hookpress_print_webhook_row( $id );
+		endif;
+	endforeach;
+	endif;
+?>
+	</tbody>
+</table>
+<?php
 }
 
 function hookpress_check_version_json($version) {
@@ -94,9 +252,12 @@ function hookpress_register_hooks() {
   global $hookpress_callbacks, $hookpress_actions, $hookpress_filters;
   $hookpress_callbacks = array();
   
-  if (!is_array(get_option('hookpress_webhooks')))
+	$all_hooks = hookpress_get_hooks( );
+  
+  if (!is_array( $all_hooks ) )
     return;
-  foreach (get_option('hookpress_webhooks') as $id => $desc) {
+
+  foreach ( $all_hooks as $id => $desc) {
     if (count($desc) && $desc['enabled']) {
       $hookpress_callbacks[$id] = create_function('','
         $args = func_get_args();
@@ -113,8 +274,10 @@ function hookpress_register_hooks() {
 function hookpress_generic_action($id,$args) {
   global $hookpress_version, $wpdb, $hookpress_actions, $hookpress_filters;
   
-  $webhooks = get_option('hookpress_webhooks');
+  $webhooks = hookpress_get_hooks( );
   $desc = $webhooks[$id];
+
+	do_action( 'hookpress_hook_fired', $desc );
 
   $obj = array();
   
@@ -144,7 +307,8 @@ function hookpress_generic_action($id,$args) {
         
         break;
       case 'COMMENT':
-        $newobj = $wpdb->get_row("select * from $wpdb->comments where comment_ID = $arg",ARRAY_A);
+		$arg = (int) $arg;
+		$newobj = (array) get_comment( $arg );
         break;
       case 'CATEGORY':
         $newobj = $wpdb->get_row("select * from $wpdb->categories where cat_ID = $arg",ARRAY_A);
@@ -166,7 +330,6 @@ function hookpress_generic_action($id,$args) {
         $newobj[$arg_names[$i]] = $arg;
     }
     $obj = array_merge($obj,$newobj);
-    
   }
   
   // take only the fields we care about
