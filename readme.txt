@@ -40,7 +40,8 @@ HookPress is now localizable. If you would like to localize HookPress, [please c
 == Changelog ==
 
 = 0.1.9 =
-* Updated options screen; added webhook editing
+* New snazzy options screen
+  * added webhook editing
 * Various miscellaneous features: added nonces for security, modularized the code a bit, etc.
 = 0.1.8 =
 * Added more filters—now covers basic + comment filters
