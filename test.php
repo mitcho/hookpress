@@ -21,4 +21,3 @@ $print = print_r($_REQUEST,true);
 
 echo array_shift($_REQUEST);
 
-

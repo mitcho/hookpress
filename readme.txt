@@ -2,12 +2,12 @@
 Contributors: mitchoyoshitaka, automattic
 Author: mitcho (Michael Yoshitaka Erlewine)
 Author URI: http://mitcho.com/
-Plugin URI: http://mitcho.com/code/yarpp/
-Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=66G4DATK4999L&item_name=mitcho%2ecom%2fcode%2fhookpress%3a%20donate%20to%20Michael%20Yoshitaka%20Erlewine&no_shipping=0&no_note=1&tax=0&currency_code=USD&lc=US&charset=UTF%2d8
+Plugin URI: http://mitcho.com/code/
+Donate link: http://tinyurl.com/donatetomitcho
 Tags: hook, filter, action, plugin, webhook, webhooks, notification, internal
-Requires at least: 2.8
-Tested up to: 3.1
-Stable tag: 0.1.9
+Requires at least: 3.1
+Tested up to: 3.3
+Stable tag: 0.1.10
 
 HookPress turns all of your WordPress-internal hooks into webhooks. Possible uses include generating push notifications or using non-PHP web technology to extend WordPress.
 
@@ -31,7 +31,7 @@ Upload the HookPress plugin to your blog's `wp-content/plugins/` directory and a
 
 == Frequently Asked Questions ==
 
-If you have a feature request or question, please use the <a href='http://wordpress.org/tags/hookpress'>HookPress support forum</a>.
+If you have a feature request or question, please use the [HookPress support forum](http://wordpress.org/tags/hookpress).
 
 = How does HookPress affect performance? =
 
@@ -43,6 +43,9 @@ HookPress is now localizable. If you would like to localize HookPress, [please c
 
 == Changelog ==
 
+= 0.1.10 =
+* No longer depends on the Snoopy library; uses `wp_remote_post()` instead; added the `hookpress_request` filter. Note that the HTTP referer may no longer be sent correctly.
+* Code cleanup
 = 0.1.9 =
 * New snazzy options screen, with [help from Automattic](http://en.blog.wordpress.com/2010/04/14/hook-line-and-sinker/)
   * added webhook editing

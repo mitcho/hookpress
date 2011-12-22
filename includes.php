@@ -6,43 +6,38 @@ require('hooks.php');
 
 // OPTIONS
 
-$hookpress_value_options = 
-  array('version' => $hookpress_version,
-        'webhooks' => array()
-        );
+function hookpress_get_fields( $type ) {
+	global $wpdb;
+	$map = array('POST' => array($wpdb->posts),
+							 'PARENT_POST' => array($wpdb->posts),
+							 'COMMENT' => array($wpdb->comments),
+							 'CATEGORY' => array($wpdb->terms,$wpdb->term_taxonomy),
+							 'ATTACHMENT' => array($wpdb->posts),
+							 'LINK' => array($wpdb->links),
+							 'USER' => array($wpdb->users),
+							 'TAG_OBJ' => array($wpdb->terms,$wpdb->term_taxonomy),
+							 'USER_OBJ' => array($wpdb->users),
+							 'OLD_USER_OBJ' => array($wpdb->users));
+	$tables = $map[$type];
+	$fields = array();
+	foreach ( (array) $tables as $table) {
+		if (is_array($table))
+			$fields = array_merge($fields,$table);
+		else
+			$fields = array_merge($fields,$wpdb->get_col("show columns from $table"));
+	}
 
-function hookpress_get_fields($type) {
-  global $wpdb;
-  $map = array('POST' => array($wpdb->posts),
-               'PARENT_POST' => array($wpdb->posts),
-               'COMMENT' => array($wpdb->comments),
-               'CATEGORY' => array($wpdb->terms,$wpdb->term_taxonomy),
-               'ATTACHMENT' => array($wpdb->posts),
-               'LINK' => array($wpdb->links),
-               'USER' => array($wpdb->users),
-               'TAG_OBJ' => array($wpdb->terms,$wpdb->term_taxonomy),
-               'USER_OBJ' => array($wpdb->users),
-               'OLD_USER_OBJ' => array($wpdb->users));
-  $tables = $map[$type];
-  $fields = array();
-  foreach ( (array) $tables as $table) {
-    if (is_array($table))
-      $fields = array_merge($fields,$table);
-    else
-      $fields = array_merge($fields,$wpdb->get_col("show columns from $table"));
-  }
+	// if it's a POST, we have a URL for it as well.
+	if ($type == 'POST' || $type == 'PARENT_POST')
+		$fields[] = 'post_url';
 
-  // if it's a POST, we have a URL for it as well.
-  if ($type == 'POST' || $type == 'PARENT_POST')
-    $fields[] = 'post_url';
+	if ($type == 'PARENT_POST')
+		$fields = array_map(create_function('$x','return "parent_$x";'),$fields);
 
-  if ($type == 'PARENT_POST')
-    $fields = array_map(create_function('$x','return "parent_$x";'),$fields);
+	if ($type == 'OLD_USER_OBJ')
+		$fields = array_map(create_function('$x','return "old_$x";'),$fields);
 
-  if ($type == 'OLD_USER_OBJ')
-    $fields = array_map(create_function('$x','return "old_$x";'),$fields);
-
-  return array_unique($fields);
+	return array_unique($fields);
 }
 
 function hookpress_print_edit_webhook( $id ){
@@ -51,12 +46,12 @@ function hookpress_print_edit_webhook( $id ){
 	global $wpdb, $hookpress_actions, $hookpress_filters;
 	
 	$webhooks = hookpress_get_hooks( );
-  $desc = $webhooks[$id];
-  	
-  if ($desc['type'] == 'action')
-    $hooks = array_keys($hookpress_actions);	
-  if ($desc['type'] == 'filter')
-    $hooks = array_keys($hookpress_filters);
+	$desc = $webhooks[$id];
+		
+	if ($desc['type'] == 'action')
+		$hooks = array_keys($hookpress_actions);	
+	if ($desc['type'] == 'filter')
+		$hooks = array_keys($hookpress_filters);
 ?>
 <div id='hookpress-webhook' style='display:block;'>
 <form id='editform'>
@@ -76,16 +71,16 @@ if ($desc['type'] == 'filter')
 ?>
 </label></td>
 <td><select name='edithook' id='edithook'>
-    <?php  	
-      sort($hooks);
-      foreach ($hooks as $hook) {
-      	$selected = ($hook == $desc['hook'])?'selected="true"':'';
+		<?php		
+			sort($hooks);
+			foreach ($hooks as $hook) {
+				$selected = ($hook == $desc['hook'])?'selected="true"':'';
 		$hook = esc_html( $hook );
-        echo "<option value='$hook' $selected>$hook</option>";
-      }
-      $nonce_submit = "<input type='hidden' id='submit-nonce' name='submit-nonce' value='" . wp_create_nonce( 'submit-webhook') . "' />";
-    ?>
-  </select></td></tr>
+				echo "<option value='$hook' $selected>$hook</option>";
+			}
+			$nonce_submit = "<input type='hidden' id='submit-nonce' name='submit-nonce' value='" . wp_create_nonce( 'submit-webhook') . "' />";
+		?>
+	</select></td></tr>
 <tr><td style='vertical-align: top'><label style='font-weight: bold' for='editfields'><?php _e("Fields",'hookpress');?>: </label>
 <br/>
 <small><?php _e("Ctrl-click on Windows or Command-click on Mac to select multiple. The <code>hook</code> field with the relevant hook name is always sent.");?></small>
@@ -96,24 +91,24 @@ if ($desc['type'] == 'filter')
 <select style='vertical-align: top' name='editfields' id='editfields' multiple='multiple' size='8'>
 <?php
 	global $wpdb, $hookpress_actions, $hookpress_filters;
-  if ($desc['type'] == 'action')
-    $args = $hookpress_actions[$desc['hook']];
-  if ($desc['type'] == 'filter')
-    $args = $hookpress_filters[$desc['hook']];
-    
+	if ($desc['type'] == 'action')
+		$args = $hookpress_actions[$desc['hook']];
+	if ($desc['type'] == 'filter')
+		$args = $hookpress_filters[$desc['hook']];
+		
 $fields = array();
-  foreach ($args as $arg) {
-    if (ereg('[A-Z]+',$arg))
-      $fields = array_merge($fields,hookpress_get_fields($arg));
-    else
-      $fields[] = $arg;
-  }
-  
-  if ($desc['type'] == 'filter') {
-    $first = array_shift($fields);
-    $first = esc_html( $first );
-    echo "<option value='$first' selected='selected' class='first'>$first</option>";
-  }
+	foreach ($args as $arg) {
+		if (ereg('[A-Z]+',$arg))
+			$fields = array_merge($fields,hookpress_get_fields($arg));
+		else
+			$fields[] = $arg;
+	}
+	
+	if ($desc['type'] == 'filter') {
+		$first = array_shift($fields);
+		$first = esc_html( $first );
+		echo "<option value='$first' selected='selected' class='first'>$first</option>";
+	}
 	sort($fields);
 	foreach ($fields as $field) {
 		$selected = '';
@@ -123,17 +118,17 @@ $fields = array();
 			}
 		}
 	$field = esc_html( $field );
-    echo "<option value='$field' $selected>$field</option>";
-  }
-  $desc['url'] = esc_html( $desc['url'] );
+		echo "<option value='$field' $selected>$field</option>";
+	}
+	$desc['url'] = esc_html( $desc['url'] );
 ?></select></td></tr>
 <tr><td><label style='font-weight: bold' for='newurl'><?php _e("URL",'hookpress');?>: </label></td>
 <td><input name='editurl' id='editurl' size='40' value="<?php echo $desc['url']; ?>"></input></td></tr>
 </table>
-<?php  echo $nonce_submit; ?>
-  <center><span id='editindicator'></span><br/>
-  <input type='button' class='button' id='editsubmit' value='<?php _e('Save webhook','hookpress');?>'/>
-  <input type='button' class='button' id='editcancel' value='<?php _e('Cancel');?>'/></center>
+<?php	echo $nonce_submit; ?>
+	<center><span id='editindicator'></span><br/>
+	<input type='button' class='button' id='editsubmit' value='<?php _e('Save webhook','hookpress');?>'/>
+	<input type='button' class='button' id='editcancel' value='<?php _e('Cancel');?>'/></center>
 
 </form>
 </div>
@@ -141,9 +136,9 @@ $fields = array();
 }
 
 function hookpress_print_webhook_row( $id ) {
-#  $webhooks = get_option('hookpress_webhooks');
+#	$webhooks = get_option('hookpress_webhooks');
 	$webhooks = hookpress_get_hooks( );
-  $desc = $webhooks[$id];
+	$desc = $webhooks[$id];
 
 	if( !empty( $desc ) ):
 	
@@ -169,14 +164,13 @@ function hookpress_print_webhook_row( $id ) {
 		
 	$edit = '<a href="#TB_inline?inlineId=hookpress-webhook&height=330&width=500" id="edit'. $html_safe['id'] . '" title="' . __('Edit this webhook') . '" class="thickbox edit">' . __('Edit') . '</a>';
 	
-//	$action_count = count($actions);
-	$style = $desc['enabled'] ? '' : 'style="background-color:#EEEEEE;"';
+	$activeornot = $desc['enabled'] ? 'active' : 'inactive';
 
 	$html_safe['hook'] = esc_html( $desc['hook'] );
 	$html_safe['url'] = esc_html( $desc['url'] );
 
 	echo "
-<tr id='$id' $style>
+<tr id='$id' class='$activeornot'>
 	<td class='webhook-title'><strong>{$html_safe['hook']}</strong>
 	<div class='row-actions'>$nonce_action $nonce_delete<span class='edit'>$edit | <span class='delete'>$delete | </span><span class='action'>$action</span></div></td>
 	<td class='desc'><p>{$html_safe['url']}</p></td>
@@ -226,133 +220,96 @@ function hookpress_print_webhooks_table() {
 <?php
 }
 
-function hookpress_check_version_json($version) {
-  include_once(ABSPATH . WPINC . '/class-snoopy.php');
-  if (class_exists('Snoopy')) {
-    $snoopy = new Snoopy;
-    $snoopy->referer = get_bloginfo('siteurl');
-    $result = $snoopy->fetch("http://mitcho.com/code/hookpress/checkversion.php?version=$version");
-    if ($result) {
-      return $snoopy->results;
-    }
-  }
-  return '{}';
-}
-
 // MAGIC
 
-function hookpress_obj_to_array($object) {
-  $array = array();
-  foreach($object as $member=>$data)
-    $array[$member] = $data;
-  return $array;
-}
-
 function hookpress_register_hooks() {
-  global $hookpress_callbacks, $hookpress_actions, $hookpress_filters;
-  $hookpress_callbacks = array();
-  
+	global $hookpress_callbacks, $hookpress_actions, $hookpress_filters;
+	$hookpress_callbacks = array();
+	
 	$all_hooks = hookpress_get_hooks( );
-  
-  if (!is_array( $all_hooks ) )
-    return;
+	
+	if (!is_array( $all_hooks ) )
+		return;
 
-  foreach ( $all_hooks as $id => $desc) {
-    if (count($desc) && $desc['enabled']) {
-      $hookpress_callbacks[$id] = create_function('','
-        $args = func_get_args();
-        return hookpress_generic_action('.$id.',$args);
-      ');
-      if (isset($desc['type']) && $desc['type'] == 'filter')
-        add_filter($desc['hook'], $hookpress_callbacks[$id], HOOKPRESS_PRIORITY, count($hookpress_filters[$desc['hook']]));
-      else
-        add_action($desc['hook'], $hookpress_callbacks[$id], HOOKPRESS_PRIORITY, count($hookpress_actions[$desc['hook']]));
-    }
-  }
+	foreach ( $all_hooks as $id => $desc) {
+		if (count($desc) && $desc['enabled']) {
+			$hookpress_callbacks[$id] = create_function('','
+				$args = func_get_args();
+				return hookpress_generic_action('.$id.',$args);
+			');
+			add_filter($desc['hook'], $hookpress_callbacks[$id], HOOKPRESS_PRIORITY, count($hookpress_filters[$desc['hook']]));
+		}
+	}
 }
 
 function hookpress_generic_action($id,$args) {
-  global $hookpress_version, $wpdb, $hookpress_actions, $hookpress_filters;
-  
-  $webhooks = hookpress_get_hooks( );
-  $desc = $webhooks[$id];
+	global $hookpress_version, $wpdb, $hookpress_actions, $hookpress_filters, $wp_version;
+	
+	$webhooks = hookpress_get_hooks( );
+	$desc = $webhooks[$id];
 
 	do_action( 'hookpress_hook_fired', $desc );
 
-  $obj = array();
-  
-  // generate the expected argument names
-  if (isset($desc['type']) && $desc['type'] == 'filter')
-    $arg_names = $hookpress_filters[$desc['hook']];  
-  else
-    $arg_names = $hookpress_actions[$desc['hook']];
-  
-  foreach($args as $i => $arg) {
-    $newobj = array();
-    switch($arg_names[$i]) {
-      case 'POST':
-      case 'ATTACHMENT':
-        $newobj = get_post($arg,ARRAY_A);
+	$obj = array();
+	
+	// generate the expected argument names
+	if (isset($desc['type']) && $desc['type'] == 'filter')
+		$arg_names = $hookpress_filters[$desc['hook']];	
+	else
+		$arg_names = $hookpress_actions[$desc['hook']];
+	
+	foreach($args as $i => $arg) {
+		$newobj = array();
+		switch($arg_names[$i]) {
+			case 'POST':
+			case 'ATTACHMENT':
+				$newobj = get_post($arg,ARRAY_A);
 
-        if ($arg_names[$i] == 'POST')
-          $newobj["post_url"] = get_permalink($newobj["ID"]);
-          
-        if (wp_is_post_revision($arg)) {
-          $parent = get_post(wp_is_post_revision($arg));
-          foreach ($parent as $key => $val) {
-            $newobj["parent_$key"] = $val;
-          }
-          $newobj["parent_post_url"] = get_permalink($newobj["parent_ID"]);
-        }
-        
-        break;
-      case 'COMMENT':
+				if ($arg_names[$i] == 'POST')
+					$newobj["post_url"] = get_permalink($newobj["ID"]);
+					
+				if (wp_is_post_revision($arg)) {
+					$parent = get_post(wp_is_post_revision($arg));
+					foreach ($parent as $key => $val) {
+						$newobj["parent_$key"] = $val;
+					}
+					$newobj["parent_post_url"] = get_permalink($newobj["parent_ID"]);
+				}
+				
+				break;
+			case 'COMMENT':
 		$arg = (int) $arg;
 		$newobj = (array) get_comment( $arg );
-        break;
-      case 'CATEGORY':
-        $newobj = $wpdb->get_row("select * from $wpdb->categories where cat_ID = $arg",ARRAY_A);
-        break;
-      case 'USER':
-        $newobj = $wpdb->get_row("select * from $wpdb->users where ID = $arg",ARRAY_A);
-        break;
-      case 'LINK':
-        $newobj = $wpdb->get_row("select * from $wpdb->links where link_id = $arg",ARRAY_A);
-        break;
-      case 'TAG_OBJ':
-        $newobj = hookpress_obj_to_array($arg);
-        break;
-      case 'USER_OBJ':
-        $newobj = hookpress_obj_to_array($arg);
-      case 'OLD_USER_OBJ':
-        $newobj = array_map(create_function('$x','return "old_$x";'),hookpress_obj_to_array($arg));
-      default:
-        $newobj[$arg_names[$i]] = $arg;
-    }
-    $obj = array_merge($obj,$newobj);
-  }
-  
-  // take only the fields we care about
-  $obj_to_post = array_intersect_key($obj,array_flip($desc['fields']));
-  
-  $obj_to_post['hook'] = $desc['hook'];
-  
-  $url = $desc['url'];
-  include_once(ABSPATH . WPINC . '/class-snoopy.php');
-  if (class_exists('Snoopy')) {
-    $snoopy = new Snoopy;
-    // TODO: add proxy settings... but is it really necessary?
-    // $snoopy->proxy_host = "my.proxy.host";
-    // $snoopy->proxy_port = "8080";
-    // TODO: add authentication settings.
-    // $snoopy->user = "me";
-    // $snoopy->pass = "p@ssw0rd";
-    $snoopy->maxredirs = 0;
-    $snoopy->agent = "HookPress/$hookpress_version (compatible; WordPress ".$GLOBALS['wp_version']."; +http://mitcho.com/code/hookpress/)";
-    $snoopy->referer = get_bloginfo('siteurl');
-    $result = $snoopy->submit($url,$obj_to_post);
-    if ($result) {
-      return $snoopy->results;
-    }
-  }
+				break;
+			case 'CATEGORY':
+				$newobj = $wpdb->get_row("select * from $wpdb->categories where cat_ID = $arg",ARRAY_A);
+				break;
+			case 'USER':
+				$newobj = $wpdb->get_row("select * from $wpdb->users where ID = $arg",ARRAY_A);
+				break;
+			case 'LINK':
+				$newobj = $wpdb->get_row("select * from $wpdb->links where link_id = $arg",ARRAY_A);
+				break;
+			case 'TAG_OBJ':
+				$newobj = (array) $arg;
+				break;
+			case 'USER_OBJ':
+				$newobj = (array) $arg;
+			case 'OLD_USER_OBJ':
+				$newobj = array_map(create_function('$x','return "old_$x";'), (array) $arg);
+			default:
+				$newobj[$arg_names[$i]] = $arg;
+		}
+		$obj = array_merge($obj,$newobj);
+	}
+	
+	// take only the fields we care about
+	$obj_to_post = array_intersect_key($obj,array_flip($desc['fields']));
+	$obj_to_post['hook'] = $desc['hook'];
+	
+	$user_agent = "HookPress/{$hookpress_version} (compatible; WordPress {$wp_version}; +http://mitcho.com/code/hookpress/)";
+	
+	$request = apply_filters( 'hookpress_request', array('user-agent' => $user_agent, 'body' => $obj_to_post, 'referer' => get_bloginfo('url')) );
+	
+	return wp_remote_post($desc['url'], $request);
 }
