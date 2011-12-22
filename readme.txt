@@ -15,9 +15,10 @@ HookPress turns all of your WordPress-internal hooks into webhooks. Possible use
 
 Webhooks are a simple paradigm for developing instant notifications and mashups based on simple HTTP requests. With HookPress you can set up webhooks so that a specified URL (a public service or something you set up) is requested when certain WordPress actions occur. Possible uses include generating push notifications or using non-PHP web technology to extend WordPress.
 
-**[As seen on WordPress.com!](http://en.blog.wordpress.com/2010/04/14/hook-line-and-sinker/)**
-
+[vimeo 5905102]
 A tutorial video is available [on WordPress.tv](http://wordpress.tv/2009/09/13/introduction-to-hookpress/).
+
+**[As seen on WordPress.com!](http://en.blog.wordpress.com/2010/04/14/hook-line-and-sinker/)**
 
 **To learn about the various hooks WordPress provides**, please consult the WordPress Plugin API's [Action Reference](http://codex.wordpress.org/Plugin_API/Action_Reference) and [Filter Reference](http://codex.wordpress.org/Plugin_API/Filter_Reference). Not all hooks are supported yet, but more are in the works.
 
