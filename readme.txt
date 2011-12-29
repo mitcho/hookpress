@@ -9,7 +9,7 @@ Requires at least: 3.1
 Tested up to: 3.3
 Stable tag: 0.1.11
 
-HookPress turns all of your WordPress-internal hooks into webhooks. Possible uses include generating push notifications or using non-PHP web technology to extend WordPress.
+HookPress turns your WordPress-internal hooks into webhooks. Possible uses include generating push notifications or extending WordPress with non-PHP.
 
 == Description ==
 
