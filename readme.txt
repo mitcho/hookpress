@@ -7,7 +7,7 @@ Donate link: http://tinyurl.com/donatetomitcho
 Tags: hook, filter, action, plugin, webhook, webhooks, notification, internal
 Requires at least: 3.1
 Tested up to: 3.3
-Stable tag: 0.1.10
+Stable tag: 0.1.11
 
 HookPress turns all of your WordPress-internal hooks into webhooks. Possible uses include generating push notifications or using non-PHP web technology to extend WordPress.
 
@@ -15,10 +15,9 @@ HookPress turns all of your WordPress-internal hooks into webhooks. Possible use
 
 Webhooks are a simple paradigm for developing instant notifications and mashups based on simple HTTP requests. With HookPress you can set up webhooks so that a specified URL (a public service or something you set up) is requested when certain WordPress actions occur. Possible uses include generating push notifications or using non-PHP web technology to extend WordPress.
 
-[vimeo 5905102]
-A tutorial video is available [on WordPress.tv](http://wordpress.tv/2009/09/13/introduction-to-hookpress/).
-
 **[As seen on WordPress.com!](http://en.blog.wordpress.com/2010/04/14/hook-line-and-sinker/)**
+
+A tutorial video is available [on WordPress.tv](http://wordpress.tv/2009/09/13/introduction-to-hookpress/).
 
 **To learn about the various hooks WordPress provides**, please consult the WordPress Plugin API's [Action Reference](http://codex.wordpress.org/Plugin_API/Action_Reference) and [Filter Reference](http://codex.wordpress.org/Plugin_API/Filter_Reference). Not all hooks are supported yet, but more are in the works.
 
@@ -38,14 +37,13 @@ If you have a feature request or question, please use the [HookPress support for
 
 HookPress currently makes requests synchronously so can measurably affect performance. I highly recommend using a caching plugin such as [WP-SuperCache](http://ocaoimh.ie/wp-super-cache/) to stem the performance hit. If your filters' results are time-sensitive or dependent on external data sources as well, make sure to set an appropriate cache expiration time.
 
-== Localizations ==
-
-HookPress is now localizable. If you would like to localize HookPress, [please contact me first](mailto:hookpress@mitcho.com) to claim your language before starting to work.
-
 == Changelog ==
 
+= 0.1.11 =
+* Fix to register the right number of incoming arguments for actions.
 = 0.1.10 =
-* No longer depends on the Snoopy library; uses `wp_remote_post()` instead; added the `hookpress_request` filter. Note that the HTTP referer may no longer be sent correctly.
+* No longer depends on the Snoopy library; uses `wp_remote_post()` instead. Note that the HTTP referer may no longer be sent correctly.
+* Added the `hookpress_request` filter.
 * Code cleanup
 = 0.1.9 =
 * New snazzy options screen, with [help from Automattic](http://en.blog.wordpress.com/2010/04/14/hook-line-and-sinker/)

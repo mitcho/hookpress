@@ -1,6 +1,5 @@
 <?php
 
-require('intl.php');
 require('services.php');
 require('hooks.php');
 
@@ -96,7 +95,7 @@ if ($desc['type'] == 'filter')
 	if ($desc['type'] == 'filter')
 		$args = $hookpress_filters[$desc['hook']];
 		
-$fields = array();
+	$fields = array();
 	foreach ($args as $arg) {
 		if (ereg('[A-Z]+',$arg))
 			$fields = array_merge($fields,hookpress_get_fields($arg));
@@ -237,7 +236,14 @@ function hookpress_register_hooks() {
 				$args = func_get_args();
 				return hookpress_generic_action('.$id.',$args);
 			');
-			add_filter($desc['hook'], $hookpress_callbacks[$id], HOOKPRESS_PRIORITY, count($hookpress_filters[$desc['hook']]));
+
+			$arg_count = 0;
+			if (isset($desc['type']) && $desc['type'] == 'filter')
+				$arg_count = count($hookpress_filters[$desc['hook']]);
+			else
+				$arg_count = count($hookpress_actions[$desc['hook']]);
+
+			add_filter($desc['hook'], $hookpress_callbacks[$id], HOOKPRESS_PRIORITY, $arg_count);
 		}
 	}
 }
@@ -278,8 +284,8 @@ function hookpress_generic_action($id,$args) {
 				
 				break;
 			case 'COMMENT':
-		$arg = (int) $arg;
-		$newobj = (array) get_comment( $arg );
+				$arg = (int) $arg;
+				$newobj = (array) get_comment( $arg );
 				break;
 			case 'CATEGORY':
 				$newobj = $wpdb->get_row("select * from $wpdb->categories where cat_ID = $arg",ARRAY_A);
