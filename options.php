@@ -253,27 +253,27 @@ $(document).ready(function(){
 });
 
 var setEvents = function setEvents() {
-	$('#TB_window .newtype').live('change',getHooks);
-	$('#TB_window #newhook').live('change',getFields);
-	$('#TB_window #newfields').live('change',enforceFirst);
-	$('#TB_window #newsubmit').live('click',newSubmit);
-	$('#TB_window #newcancel').live('click',tb_remove);
+	$(document).on('change','#TB_window .newtype',getHooks);
+	$(document).on('change','#TB_window #newhook',getFields);
+	$(document).on('change','#TB_window #newfields',enforceFirst);
+	$(document).on('click','#TB_window #newsubmit',newSubmit);
+	$(document).on('click','#TB_window #newcancel',tb_remove);
 
-	$('#webhooks .delete').live('click', function(e){
+	$(document).on('click', '#webhooks .delete', function(e){
 		var id = e.currentTarget.id.replace('delete','');
 		deleteHook(id);
 	});
-	$('#webhooks .edit').live('click', function(e){
+	$(document).on('click', '#webhooks .edit', function(e){
 		var id = e.currentTarget.id.replace('edit','');
 		if(id){setupEditHook(id);}
 	});
 
-	$('#webhooks .on').live('click', function(e){
+	$(document).on('click', '#webhooks .on', function(e){
 		var id = e.currentTarget.id.replace('on','');
 		var nonce = $('#action-nonce-' + id).val();
 		if(id && nonce){setHookEnabled(id, nonce, 'false');}
 	});
-	$('#webhooks .off').live('click', function(e){
+	$(document).on('click', '#webhooks .off', function(e){
 		var id = e.currentTarget.id.replace('off','');
 		var nonce = $('#action-nonce-' + id).val();
 		if(id&&nonce){setHookEnabled(id, nonce, 'true');}
