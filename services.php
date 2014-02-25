@@ -15,7 +15,7 @@ function hookpress_ajax_get_fields() {
 			else
 				$fields[] = $arg;
 		}
-	  }
+	}
 
 	header("Content-Type: text/html; charset=UTF-8");
 
@@ -124,8 +124,9 @@ function hookpress_ajax_get_hooks() {
 	if ($_POST['type'] == 'filter')
 		$hooks = array_keys($hookpress_filters);
 
-	header("Content-Type: text/html; charset=UTF-8");
+  header("Content-Type: text/html; charset=UTF-8");
 
+<<<<<<< HEAD
 	if (is_array($hooks)) {
 		sort($hooks);
 		foreach ($hooks as $hook) {
@@ -134,4 +135,14 @@ function hookpress_ajax_get_hooks() {
 		}
 	}
 	exit;
+=======
+  if (is_array($hooks)) {
+    sort($hooks);
+    foreach ($hooks as $hook) {
+      $hook = esc_html( $hook );
+      echo "<option value='$hook'>$hook</option>";
+    }
+  }
+  exit;
+>>>>>>> Clean up some error logs
 }
