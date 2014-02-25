@@ -8,11 +8,13 @@ function hookpress_ajax_get_fields() {
     $args = $hookpress_filters[$_POST['hook']];
 
   $fields = array();
-  foreach ($args as $arg) {
-    if (ereg('[A-Z]+',$arg))
-      $fields = array_merge($fields,hookpress_get_fields($arg));
-    else
-      $fields[] = $arg;
+  if (is_array($args)) {
+    foreach ($args as $arg) {
+      if (ereg('[A-Z]+',$arg))
+        $fields = array_merge($fields,hookpress_get_fields($arg));
+      else
+        $fields[] = $arg;
+    }
   }
 
 	header("Content-Type: text/html; charset=UTF-8");
@@ -123,12 +125,14 @@ function hookpress_ajax_get_hooks() {
   if ($_POST['type'] == 'filter')
     $hooks = array_keys($hookpress_filters);
 
-	header("Content-Type: text/html; charset=UTF-8");
+  header("Content-Type: text/html; charset=UTF-8");
 
-	sort($hooks);
-	foreach ($hooks as $hook) {
-	$hook = esc_html( $hook );
-    echo "<option value='$hook'>$hook</option>";
+  if (is_array($hooks)) {
+    sort($hooks);
+    foreach ($hooks as $hook) {
+      $hook = esc_html( $hook );
+      echo "<option value='$hook'>$hook</option>";
+    }
   }
   exit;
 }
