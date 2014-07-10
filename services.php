@@ -124,7 +124,7 @@ function hookpress_ajax_get_hooks() {
 	if ($_POST['type'] == 'filter')
 		$hooks = array_keys($hookpress_filters);
 
-	header("Content-Type: text/html; charset=UTF-8");
+  header("Content-Type: text/html; charset=UTF-8");
 
 	if (is_array($hooks)) {
 		sort($hooks);
