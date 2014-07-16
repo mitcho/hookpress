@@ -8,15 +8,15 @@ require('hooks.php');
 function hookpress_get_fields( $type ) {
 	global $wpdb;
 	$map = array('POST' => array($wpdb->posts),
-							 'PARENT_POST' => array($wpdb->posts),
-							 'COMMENT' => array($wpdb->comments),
-							 'CATEGORY' => array($wpdb->terms,$wpdb->term_taxonomy),
-							 'ATTACHMENT' => array($wpdb->posts),
-							 'LINK' => array($wpdb->links),
-							 'USER' => array($wpdb->users),
-							 'TAG_OBJ' => array($wpdb->terms,$wpdb->term_taxonomy),
-							 'USER_OBJ' => array($wpdb->users),
-							 'OLD_USER_OBJ' => array($wpdb->users));
+                     'PARENT_POST' => array($wpdb->posts),
+                     'COMMENT' => array($wpdb->comments),
+                     'CATEGORY' => array($wpdb->terms,$wpdb->term_taxonomy),
+                     'ATTACHMENT' => array($wpdb->posts),
+                     'LINK' => array($wpdb->links),
+                     'USER' => array($wpdb->users),
+                     'TAG_OBJ' => array($wpdb->terms,$wpdb->term_taxonomy),
+                     'USER_OBJ' => array($wpdb->users),
+                     'OLD_USER_OBJ' => array($wpdb->users));
 	$tables = $map[$type];
 	$fields = array();
 	foreach ( (array) $tables as $table) {
@@ -32,6 +32,9 @@ function hookpress_get_fields( $type ) {
 
 	if ($type == 'PARENT_POST')
 		$fields = array_map(create_function('$x','return "parent_$x";'),$fields);
+
+	if ($type == 'USER')
+		array_push($fields, "roles");
 
 	if ($type == 'OLD_USER_OBJ')
 		$fields = array_map(create_function('$x','return "old_$x";'),$fields);
@@ -292,6 +295,8 @@ function hookpress_generic_action($id,$args) {
 				break;
 			case 'USER':
 				$newobj = $wpdb->get_row("select * from $wpdb->users where ID = $arg",ARRAY_A);
+				$user = new WP_User($arg);
+				$newobj["roles"] = implode(":",$user->roles);
 				break;
 			case 'LINK':
 				$newobj = $wpdb->get_row("select * from $wpdb->links where link_id = $arg",ARRAY_A);
@@ -301,8 +306,11 @@ function hookpress_generic_action($id,$args) {
 				break;
 			case 'USER_OBJ':
 				$newobj = (array) $arg;
+				break;
 			case 'OLD_USER_OBJ':
-				$newobj = array_map(create_function('$x','return "old_$x";'), (array) $arg);
+				$newobj = array();
+				array_walk($arg, function(&$val, &$key) use (&$newobj) { $newobj["old_$key"] = $val;}, $newobj);
+				break;
 			default:
 				$newobj[$arg_names[$i]] = $arg;
 		}
