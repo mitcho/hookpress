@@ -9,23 +9,25 @@ getTb = function() {
 }
 
 var getHooks = function getHooks() {
-	var type = getTb().find('.newtype:checked').attr('id');
+	console.log('getHooks');
+	var tb = getTb();
+	var type = tb.find('.newtype:checked').attr('id');
 	if (type == 'action') {
-		getTb().find('#action_or_filter').text('<?php _e("Action:",'hookpress');?> ');
-		getTb().find('#filtermessage').hide();
+		tb.find('#action_or_filter').text('<?php _e("Action:",'hookpress');?> ');
+		tb.find('#filtermessage').hide();
 	}
 	if (type == 'filter') {
-		getTb().find('#action_or_filter').text('<?php _e("Filter:",'hookpress');?> ');
-		getTb().find('#filtermessage').show();
+		tb.find('#action_or_filter').text('<?php _e("Filter:",'hookpress');?> ');
+		tb.find('#filtermessage').show();
 	}
 	$.ajax({type:'POST',
 		url:'admin-ajax.php',
 		data:'action=hookpress_get_hooks&type='+type,
 		beforeSend:function(){
-			getTb().find('#newhook').html('<div class="webhooks-spinner">&nbsp;</div>');
+			tb.find('#newhook').html('<div class="webhooks-spinner">&nbsp;</div>');
 		},
 		success:function(html){
-			getTb().find('#newhook').html(html);
+			tb.find('#newhook').html(html);
 			getFields();
 		},
 		dataType:'html'}
@@ -33,39 +35,43 @@ var getHooks = function getHooks() {
 }
 
 var getFields = function getFields() {
-	var hook = getTb().find('#newhook').val();
-	var type = getTb().find('.newtype:checked').attr('id');
+	console.log('getFields');
+	var tb = getTb();
+	var hook = tb.find('#newhook').val();
+	var type = tb.find('.newtype:checked').attr('id');
 	$.ajax({type:'POST',
 		url:'admin-ajax.php',
 		data:'action=hookpress_get_fields&hook='+hook+'&type='+type,
 		beforeSend:function(){
-			getTb().find('#newfields').html('<div class="webhooks-spinner">&nbsp;</div>');
+			tb.find('#newfields').html('<div class="webhooks-spinner">&nbsp;</div>');
 		},
 		success:function(html){
-			getTb().find('#newfields').html(html)
+			tb.find('#newfields').html(html)
 		},
 		dataType:'html'}
 	)
 };
 
 var getEditHooks = function getEditHooks() {
-	var type = getTb().find('.newtype:checked').attr('id');
+	console.log('getEditHooks');
+	var tb = getTb();
+	var type = tb.find('.newtype:checked').attr('id');
 	if (type == 'action') {
-		getTb().find('#action_or_filter').text('<?php _e("Action:",'hookpress');?> ');
-		getTb().find('#filtermessage').hide();
+		tb.find('#action_or_filter').text('<?php _e("Action:",'hookpress');?> ');
+		tb.find('#filtermessage').hide();
 	}
 	if (type == 'filter') {
-		getTb().find('#action_or_filter').text('<?php _e("Filter:",'hookpress');?> ');
-		getTb().find('#filtermessage').show();
+		tb.find('#action_or_filter').text('<?php _e("Filter:",'hookpress');?> ');
+		tb.find('#filtermessage').show();
 	}
 	$.ajax({type:'POST',
 		url:'admin-ajax.php',
 		data:'action=hookpress_get_hooks&type='+type,
 		beforeSend:function(){
-			getTb().find('#edithook').html('<div class="webhooks-spinner">&nbsp;</div>');
+			tb.find('#edithook').html('<div class="webhooks-spinner">&nbsp;</div>');
 		},
 		success:function(html){
-			getTb().find('#edithook').html(html);
+			tb.find('#edithook').html(html);
 			getEditFields();
 		},
 		dataType:'html'}
@@ -73,57 +79,61 @@ var getEditHooks = function getEditHooks() {
 }
 
 var getEditFields = function getEditFields() {
-	var hook = getTb().find('#edithook').val();
-	var type = getTb().find('.newtype:checked').attr('id');
+	console.log('getEditFields');
+	var tb = getTb();
+	var hook = tb.find('#edithook').val();
+	var type = tb.find('.newtype:checked').attr('id');
 	$.ajax({type:'POST',
 		url:'admin-ajax.php',
 		data:'action=hookpress_get_fields&hook='+hook+'&type='+type,
 		beforeSend:function(){
-			getTb().find('#editfields').html('<div class="webhooks-spinner">&nbsp;</div>');
+			tb.find('#editfields').html('<div class="webhooks-spinner">&nbsp;</div>');
 		},
 		success:function(html){
-			getTb().find('#editfields').html(html);
+			tb.find('#editfields').html(html);
 		},
 		dataType:'html'}
 	)
 };
 
 var editSubmit = function editSubmit() {
-	if (!getTb().find('#editfields').val()) {
-		getTb().find('#editindicator').html('<small><?php _e("You must select at least one field to send.","hookpress");?></small>');
+	console.log('editSubmit');
+	var tb = getTb();
+	if (!tb.find('#editfields').val()) {
+		tb.find('#editindicator').html('<small><?php _e("You must select at least one field to send.","hookpress");?></small>');
 		return;
 	}
-	if (!/^https?:\/\/\w+/.test(getTb().find('#editurl').val())) {
-		getTb().find('#editindicator').html('<small><?php _e("Please enter a valid URL.","hookpress");?></small>');
+	if (!/^https?:\/\/\w+/.test(tb.find('#editurl').val())) {
+		tb.find('#editindicator').html('<small><?php _e("Please enter a valid URL.","hookpress");?></small>');
 		return;
 	}
 
-	getTb().find('#editindicator').html('<div class="webhooks-spinner">&nbsp;</div>');
+	tb.find('#editindicator').html('<div class="webhooks-spinner">&nbsp;</div>');
 
-	id = getTb().find('#edit-hook-id').val();
+	id = tb.find('#edit-hook-id').val();
 	
 	$.ajax({type: 'POST',
 		url:'admin-ajax.php',
 		data:'action=hookpress_add_fields'
-				 +'&fields='+getTb().find('#editfields').val().join()
-				 +'&url='+getTb().find('#editurl').val()
-				 +'&type='+getTb().find('.newtype:checked').attr('id')
-				 +'&hook='+getTb().find('#edithook').val()
-				 +'&enabled='+getTb().find('#enabled').val()
+				 +'&fields='+tb.find('#editfields').val().join()
+				 +'&url='+tb.find('#editurl').val()
+				 +'&type='+tb.find('.newtype:checked').attr('id')
+				 +'&hook='+tb.find('#edithook').val()
+				 +'&enabled='+tb.find('#enabled').val()
 				 +'&id='+id
-				 +'&_nonce='+getTb().find('#submit-nonce').val(),
+				 +'&_nonce='+tb.find('#submit-nonce').val(),
 		beforeSend:function(){
-			getTb().find('#editsubmit').hide();
-			getTb().find('#editcancel').hide()
+			tb.find('#editsubmit').hide();
+			tb.find('#editcancel').hide()
 		},
 		success:function(html){
-			getTb().find('#editsubmit').show();
-			getTb().find('#editcancel').show()
-			getTb().find('#editindicator').html('');
+			tb.find('#editsubmit').show();
+			tb.find('#editcancel').show()
+			tb.find('#editindicator').html('');
 			if (/^ERROR/.test(html))
-				getTb().find('#editindicator').html(html);
+				tb.find('#editindicator').html(html);
 			else if (!html)
-				getTb().find('#editindicator').html('<?php _e("There was an unknown error.","hookpress");?>');
+				tb.find('#editindicator').html('<?php _e("There was an unknown error.","hookpress");?>');
 			else {
 				$('#'+id).replaceWith(html);
 				tb_init('a.thickbox, area.thickbox, input.thickbox');
@@ -135,44 +145,48 @@ var editSubmit = function editSubmit() {
 };
 
 var enforceFirst = function enforceFirst() {
-	var type = getTb().find('.newtype:checked').attr('id');
+	console.log('enforceFirst');
+	var tb = getTb();
+	var type = tb.find('.newtype:checked').attr('id');
 	if (type == 'action')
 		return;
-	getTb().find('option.first').attr('selected',true);
+	tb.find('option.first').attr('selected',true);
 }
 
 var newSubmit = function newSubmit() {
-	if (!getTb().find('#newfields').val()) {
-		getTb().find('#newindicator').html('<small><?php _e("You must select at least one field to send.","hookpress");?></small>');
+	console.log('newSubmit');
+	var tb = getTb();
+	if (!tb.find('#newfields').val()) {
+		tb.find('#newindicator').html('<small><?php _e("You must select at least one field to send.","hookpress");?></small>');
 		return;
 	}
-	if (!/^https?:\/\/\w+/.test(getTb().find('#newurl').val())) {
-		getTb().find('#newindicator').html('<small><?php _e("Please enter a valid URL.","hookpress");?></small>');
+	if (!/^https?:\/\/\w+/.test(tb.find('#newurl').val())) {
+		tb.find('#newindicator').html('<small><?php _e("Please enter a valid URL.","hookpress");?></small>');
 		return;
 	}
 
-	getTb().find('#newindicator').html('<div class="webhooks-spinner">&nbsp;</div>');
+	tb.find('#newindicator').html('<div class="webhooks-spinner">&nbsp;</div>');
 
 	$.ajax({type: 'POST',
 		url:'admin-ajax.php',
 		data:'action=hookpress_add_fields'
-				 +'&fields='+getTb().find('#newfields').val().join()
-				 +'&url='+getTb().find('#newurl').val()
-				 +'&type='+getTb().find('.newtype:checked').attr('id')
-				 +'&hook='+getTb().find('#newhook').val()
-				 +'&_nonce='+getTb().find('#submit-nonce').val(),
+				 +'&fields='+tb.find('#newfields').val().join()
+				 +'&url='+tb.find('#newurl').val()
+				 +'&type='+tb.find('.newtype:checked').attr('id')
+				 +'&hook='+tb.find('#newhook').val()
+				 +'&_nonce='+tb.find('#submit-nonce').val(),
 		beforeSend:function(){
-			getTb().find('#newsubmit').hide();
-			getTb().find('#newcancel').hide()
+			tb.find('#newsubmit').hide();
+			tb.find('#newcancel').hide()
 		},
 		success:function(html){
-			getTb().find('#newsubmit').show();
-			getTb().find('#newcancel').show()
-			getTb().find('#newindicator').html('');
+			tb.find('#newsubmit').show();
+			tb.find('#newcancel').show()
+			tb.find('#newindicator').html('');
 			if (/^ERROR/.test(html))
-				getTb().find('#newindicator').html(html);
+				tb.find('#newindicator').html(html);
 			else if (!html)
-				getTb().find('#newindicator').html('<?php _e("There was an unknown error.","hookpress");?>');
+				tb.find('#newindicator').html('<?php _e("There was an unknown error.","hookpress");?>');
 			else {
 				var newhook = $(html);
 				newhook.css('background-color','rgb(255, 251, 204)');
@@ -189,6 +203,7 @@ var newSubmit = function newSubmit() {
 };
 
 var deleteHook = function deleteHook(id) {
+	console.log('deleteHook');
 	var nonce = $('#delete-nonce-' + id).val();
 	$.ajax({type: 'POST',
 		url:'admin-ajax.php',
@@ -206,6 +221,7 @@ var deleteHook = function deleteHook(id) {
 }
 
 var setHookEnabled = function setHookEnabled(id, nonce, boolean) {
+	console.log('setHookEnabled');
 	$.ajax({type: 'POST',
 		url:'admin-ajax.php',
 	beforeSend:function(){$('#' + id + ' span.edit').html('<div class="webhooks-spinner">&nbsp;</div>')},
@@ -226,15 +242,29 @@ var setHookEnabled = function setHookEnabled(id, nonce, boolean) {
 }
 
 var setupEditHook = function setupEditHook(id) {
+	console.log('setupEditHook');
+	var tb = getTb();
 	$.ajax({type: 'POST',
 		url:'admin-ajax.php',
 		data:'action=hookpress_edit_hook&id='+id,
-		success:function(html){
-			$('#TB_ajaxContent').html(html);
-			getTb().find('#edithook').change(getEditFields);
-			getTb().find('#editfields').change(enforceFirst);
-			getTb().find('#editsubmit').click(editSubmit);
-			getTb().find('#editcancel').click(tb_remove);
+		success: function(html){
+			$('#TB_ajaxContent').html(html)
+				.find('.newtype').change(getEditHooks).end()
+				.find('#edithook').change(getEditFields).end()
+				.find('#editfields').change(enforceFirst).end()
+				.find('#editsubmit').click(editSubmit).end()
+				.find('#editcancel').click(tb_remove);
+
+			var type = $('#TB_ajaxContent').find('.newtype:checked').attr('id');
+			if (type == 'action') {
+				$('#TB_ajaxContent').find('#action_or_filter').text('<?php _e("Action:",'hookpress');?> ');
+				$('#TB_ajaxContent').find('#filtermessage').hide();
+			}
+			if (type == 'filter') {
+				$('#TB_ajaxContent').find('#action_or_filter').text('<?php _e("Filter:",'hookpress');?> ');
+				$('#TB_ajaxContent').find('#filtermessage').show();
+			}
+
 		},
 		dataType:'html'}
 	);
@@ -253,31 +283,32 @@ $(document).ready(function(){
 });
 
 var setEvents = function setEvents() {
-	$(document).on('change','#TB_window .newtype',getHooks);
-	$(document).on('change','#TB_window #newhook',getFields);
-	$(document).on('change','#TB_window #newfields',enforceFirst);
-	$(document).on('click','#TB_window #newsubmit',newSubmit);
-	$(document).on('click','#TB_window #newcancel',tb_remove);
+	$(document.body)
+		.on('change','#TB_window .newtype',getHooks)
+		.on('change','#TB_window #newhook',getFields)
+		.on('change','#TB_window #newfields',enforceFirst)
+		.on('click','#TB_window #newsubmit',newSubmit)
+		.on('click','#TB_window #newcancel',tb_remove);
 
-	$(document).on('click', '#webhooks .delete', function(e){
-		var id = e.currentTarget.id.replace('delete','');
-		deleteHook(id);
-	});
-	$(document).on('click', '#webhooks .edit', function(e){
-		var id = e.currentTarget.id.replace('edit','');
-		if(id){setupEditHook(id);}
-	});
-
-	$(document).on('click', '#webhooks .on', function(e){
-		var id = e.currentTarget.id.replace('on','');
-		var nonce = $('#action-nonce-' + id).val();
-		if(id && nonce){setHookEnabled(id, nonce, 'false');}
-	});
-	$(document).on('click', '#webhooks .off', function(e){
-		var id = e.currentTarget.id.replace('off','');
-		var nonce = $('#action-nonce-' + id).val();
-		if(id&&nonce){setHookEnabled(id, nonce, 'true');}
-	});
+	$('#webhooks')
+		.on('click', '.delete', function(e){
+			var id = e.currentTarget.id.replace('delete','');
+			deleteHook(id);
+		})
+		.on('click', '.edit', function(e){
+			var id = e.currentTarget.id.replace('edit','');
+			if(id){setupEditHook(id);}
+		})
+		.on('click', '.on', function(e){
+			var id = e.currentTarget.id.replace('on','');
+			var nonce = $('#action-nonce-' + id).val();
+			if(id && nonce){setHookEnabled(id, nonce, 'false');}
+		})
+		.on('click', '.off', function(e){
+			var id = e.currentTarget.id.replace('off','');
+			var nonce = $('#action-nonce-' + id).val();
+			if(id&&nonce){setHookEnabled(id, nonce, 'true');}
+		});
 }
 
 })(jQuery);

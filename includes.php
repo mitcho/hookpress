@@ -58,8 +58,8 @@ function hookpress_print_edit_webhook( $id ){
 <input type="hidden" name="enabled" id="enabled" value="<?php echo $desc['enabled']; ?>" />
 <table>
 <tr><td><label style='font-weight: bold' for='edithook'><?php _e("WordPress hook type",'hookpress');?>: </label></td>
-<td><input type='radio' id='action' class='newtype' name='newtype' checked='checked'> <?php _e("action","hookpress");?></input> 
-<input type='radio' id='filter' class='newtype' name='newtype'> <?php _e("filter","hookpress");?></input></td></tr>
+<td><input type='radio' id='action' class='newtype' name='newtype' <?php checked('action',$desc['type']);?>> <?php _e("action","hookpress");?></input> 
+<input type='radio' id='filter' class='newtype' name='newtype' <?php checked('filter',$desc['type']);?>> <?php _e("filter","hookpress");?></input></td></tr>
 <tr>
 <td><label style='font-weight: bold' for='edithook' id='action_or_filter'>
 <?php
