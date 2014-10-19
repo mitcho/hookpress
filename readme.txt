@@ -52,7 +52,7 @@ HookPress currently makes requests synchronously so can measurably affect perfor
 * Code cleanup
 = 0.1.9 =
 * New snazzy options screen, with [help from Automattic](http://en.blog.wordpress.com/2010/04/14/hook-line-and-sinker/)
-  * added webhook editing
+	* added webhook editing
 * Various miscellaneous features: added nonces for security, modularized the code a bit, etc.
 = 0.1.8 =
 * Added more filters—now covers basic + comment filters
@@ -84,7 +84,7 @@ HookPress currently makes requests synchronously so can measurably affect perfor
 * Minor documentation changes.
 = 0.1 =
 * Initial release
-   * supports webhooks based on WP actions
+	* supports webhooks based on WP actions
 
 = Future plans =
 
