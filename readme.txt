@@ -41,6 +41,7 @@ HookPress currently makes requests synchronously so can measurably affect perfor
 == Changelog ==
 
 = 1.13 =
+* Important security fix to the test endpoint, `test.php`.
 * Code cleanup, fix bugs introduced in previous version.
 
 = 1.12 =
