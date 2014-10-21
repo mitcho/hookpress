@@ -17,7 +17,8 @@
 
 $print = print_r($_REQUEST,true);
 
-`echo '$print' >> test.log`;
+$log = fopen('test.log', 'a');
+fwrite($log, $print);
 
 echo array_shift($_REQUEST);
 
