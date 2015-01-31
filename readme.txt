@@ -6,8 +6,8 @@ Plugin URI: http://mitcho.com/code/
 Donate link: http://tinyurl.com/donatetomitcho
 Tags: hook, filter, action, plugin, webhook, webhooks, notification, internal
 Requires at least: 3.6
-Tested up to: 4.0
-Stable tag: 1.13
+Tested up to: 4.1
+Stable tag: 1.14
 
 HookPress turns your WordPress-internal hooks into webhooks. Possible uses include generating push notifications or extending WordPress with non-PHP.
 
@@ -39,6 +39,9 @@ If you have a feature request or question, please use the [HookPress support for
 HookPress currently makes requests synchronously so can measurably affect performance. I highly recommend using a caching plugin such as [WP-SuperCache](http://ocaoimh.ie/wp-super-cache/) to stem the performance hit. If your filters' results are time-sensitive or dependent on external data sources as well, make sure to set an appropriate cache expiration time.
 
 == Changelog ==
+
+= 1.14 =
+* Additional security hardening for `test.php`, now no longer bundled as a `.php`
 
 = 1.13 =
 * Important security fix to the test endpoint, `test.php`.
