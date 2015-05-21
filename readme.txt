@@ -39,6 +39,8 @@ If you have a feature request or question, please use the [HookPress support for
 HookPress currently makes requests synchronously so can measurably affect performance. I highly recommend using a caching plugin such as [WP-SuperCache](http://ocaoimh.ie/wp-super-cache/) to stem the performance hit. If your filters' results are time-sensitive or dependent on external data sources as well, make sure to set an appropriate cache expiration time.
 
 == Changelog ==
+= 1.15 = 
+* Added basic support JSON bodied webshooks and header based authentication
 
 = 1.14 =
 * Additional security hardening for `test.php`, now no longer bundled as a `.php`
