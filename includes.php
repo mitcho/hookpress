@@ -146,7 +146,7 @@ if ($desc['type'] == 'filter')
 ?>
 </select></td></tr>
 <tr><td><label style='font-weight: bold' for='newheaders'><?php _e("Headers", 'hookpress');?>: </label></td>
-<td><input name='editheaders' id='editheaders' size='40' value="<?php echo implode(",", $desc['headers']); ?>"></input></td></tr>
+<td><input name='editheaders' id='editheaders' size='40' value="<?php echo empty($desc['headers']) ? "" : implode(",", $desc['headers']); ?>"></input></td></tr>
 </table>
 <?php	echo $nonce_submit; ?>
 	<center><span id='editindicator'></span><br/>
