@@ -7,7 +7,7 @@ Donate link: http://tinyurl.com/donatetomitcho
 Tags: hook, filter, action, plugin, webhook, webhooks, notification, internal
 Requires at least: 3.6
 Tested up to: 4.1
-Stable tag: 1.14
+Stable tag: 1.15
 
 HookPress turns your WordPress-internal hooks into webhooks. Possible uses include generating push notifications or extending WordPress with non-PHP.
 
@@ -40,6 +40,10 @@ HookPress currently makes requests synchronously so can measurably affect perfor
 
 == Changelog ==
 
+= 1.15 =
+* Added custom fields to post related hooks.
+* Added hooks around action handlers to allow addition of hooks from an external plugin.
+
 = 1.14 =
 * Additional security hardening for `test.php`, now no longer bundled as a `.php`
 
@@ -62,12 +66,12 @@ HookPress currently makes requests synchronously so can measurably affect perfor
 	* added webhook editing
 * Various miscellaneous features: added nonces for security, modularized the code a bit, etc.
 = 0.1.8 =
-* Added more filtersÑnow covers basic + comment filters
+* Added more filtersï¿½now covers basic + comment filters
 * Marking as compatible through 2.9.9, because it should be.
 * Added version checking and beta offers to the options screen.
 = 0.1.7 =
 * Now supports basically all actions. (Still no actions with no arguments.)
-* Added more filter optionsÑnow covers all basic database read filters.
+* Added more filter optionsï¿½now covers all basic database read filters.
 = 0.1.6 =
 * Added another batch of actions. (Still no actions with no arguments, though... something to consider.)
 * Fixed hooks which referred to the users and links tables.
