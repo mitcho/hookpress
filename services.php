@@ -10,7 +10,7 @@ function hookpress_ajax_get_fields() {
 	$fields = array();
 	if (is_array($args)) {
 		foreach ($args as $arg) {
-			if (ereg('[A-Z]+',$arg))
+		 if (preg_match('/[A-Z]+/',$arg))
 				$fields = array_merge($fields,hookpress_get_fields($arg));
 			else
 				$fields[] = $arg;
@@ -76,7 +76,7 @@ function hookpress_ajax_set_enabled() {
 	$id = $_POST['id'];
 	$enabled = $_POST['enabled'];
 
-	$nonce_compare = ($enabled == 'true'?'activate-webhook-' . $id:'deactivate-webhook-' . $id ); 
+	$nonce_compare = ($enabled == 'true'?'activate-webhook-' . $id:'deactivate-webhook-' . $id );
 
 	if ( wp_verify_nonce( $nonce, $nonce_compare ) ) :
 
