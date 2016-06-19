@@ -43,12 +43,12 @@ function hookpress_print_edit_webhook( $id ){
 ?>
 <?php
 	global $wpdb, $hookpress_actions, $hookpress_filters;
-	
+
 	$webhooks = hookpress_get_hooks( );
 	$desc = $webhooks[$id];
-		
+
 	if ($desc['type'] == 'action')
-		$hooks = array_keys($hookpress_actions);	
+		$hooks = array_keys($hookpress_actions);
 	if ($desc['type'] == 'filter')
 		$hooks = array_keys($hookpress_filters);
 ?>
@@ -58,7 +58,7 @@ function hookpress_print_edit_webhook( $id ){
 <input type="hidden" name="enabled" id="enabled" value="<?php echo $desc['enabled']; ?>" />
 <table>
 <tr><td><label style='font-weight: bold' for='edithook'><?php _e("WordPress hook type",'hookpress');?>: </label></td>
-<td><input type='radio' id='action' class='newtype' name='newtype' <?php checked('action',$desc['type']);?>> <?php _e("action","hookpress");?></input> 
+<td><input type='radio' id='action' class='newtype' name='newtype' <?php checked('action',$desc['type']);?>> <?php _e("action","hookpress");?></input>
 <input type='radio' id='filter' class='newtype' name='newtype' <?php checked('filter',$desc['type']);?>> <?php _e("filter","hookpress");?></input></td></tr>
 <tr>
 <td><label style='font-weight: bold' for='edithook' id='action_or_filter'>
@@ -70,7 +70,7 @@ if ($desc['type'] == 'filter')
 ?>
 </label></td>
 <td><select name='edithook' id='edithook'>
-		<?php		
+		<?php
 			sort($hooks);
 			foreach ($hooks as $hook) {
 				$selected = ($hook == $desc['hook'])?'selected="true"':'';
@@ -94,7 +94,7 @@ if ($desc['type'] == 'filter')
 		$args = $hookpress_actions[$desc['hook']];
 	if ($desc['type'] == 'filter')
 		$args = $hookpress_filters[$desc['hook']];
-		
+
 	$fields = array();
 	foreach ($args as $arg) {
 		if (ereg('[A-Z]+',$arg))
@@ -102,7 +102,7 @@ if ($desc['type'] == 'filter')
 		else
 			$fields[] = $arg;
 	}
-	
+
 	if ($desc['type'] == 'filter') {
 		$first = array_shift($fields);
 		$first = esc_html( $first );
@@ -140,7 +140,7 @@ function hookpress_print_webhook_row( $id ) {
 	$desc = $webhooks[$id];
 
 	if( !empty( $desc ) ):
-	
+
 	$is_active = $desc['enabled'];
 	$html_safe['id'] = esc_html( $id );
 
@@ -160,9 +160,9 @@ function hookpress_print_webhook_row( $id ) {
 		$fields = implode('</code>, <code>', $desc['fields'] );
 	} else
 		$fields = esc_html( $desc['fields'][0] );
-		
+
 	$edit = '<a href="#TB_inline?inlineId=hookpress-webhook&height=330&width=500" id="edit'. $html_safe['id'] . '" title="' . __('Edit this webhook') . '" class="thickbox edit">' . __('Edit') . '</a>';
-	
+
 	$activeornot = $desc['enabled'] ? 'active' : 'inactive';
 
 	$html_safe['hook'] = esc_html( $desc['hook'] );
@@ -205,10 +205,10 @@ function hookpress_print_webhooks_table() {
 <?php
 
 	if ( !empty($webhooks) ) :
-	
+
 	foreach ( (array)$webhooks as $id => $desc) :
-		
-		if( !empty( $desc ) ):		
+
+		if( !empty( $desc ) ):
 			hookpress_print_webhook_row( $id );
 		endif;
 	endforeach;
@@ -224,9 +224,9 @@ function hookpress_print_webhooks_table() {
 function hookpress_register_hooks() {
 	global $hookpress_callbacks, $hookpress_actions, $hookpress_filters;
 	$hookpress_callbacks = array();
-	
+
 	$all_hooks = hookpress_get_hooks( );
-	
+
 	if (!is_array( $all_hooks ) )
 		return;
 
@@ -250,20 +250,20 @@ function hookpress_register_hooks() {
 
 function hookpress_generic_action($id,$args) {
 	global $hookpress_version, $wpdb, $hookpress_actions, $hookpress_filters, $wp_version;
-	
+
 	$webhooks = hookpress_get_hooks( );
 	$desc = $webhooks[$id];
 
 	do_action( 'hookpress_hook_fired', $desc );
 
 	$obj = array();
-	
+
 	// generate the expected argument names
 	if (isset($desc['type']) && $desc['type'] == 'filter')
-		$arg_names = $hookpress_filters[$desc['hook']];	
+		$arg_names = $hookpress_filters[$desc['hook']];
 	else
 		$arg_names = $hookpress_actions[$desc['hook']];
-	
+
 	foreach($args as $i => $arg) {
 		$newobj = array();
 		switch($arg_names[$i]) {
@@ -273,7 +273,7 @@ function hookpress_generic_action($id,$args) {
 
 				if ($arg_names[$i] == 'POST')
 					$newobj["post_url"] = get_permalink($newobj["ID"]);
-					
+
 				if (wp_is_post_revision($arg)) {
 					$parent = get_post(wp_is_post_revision($arg));
 					foreach ($parent as $key => $val) {
@@ -281,7 +281,7 @@ function hookpress_generic_action($id,$args) {
 					}
 					$newobj["parent_post_url"] = get_permalink($newobj["parent_ID"]);
 				}
-				
+
 				break;
 			case 'COMMENT':
 				$arg = (int) $arg;
@@ -308,14 +308,14 @@ function hookpress_generic_action($id,$args) {
 		}
 		$obj = array_merge($obj,$newobj);
 	}
-	
+
 	// take only the fields we care about
 	$obj_to_post = array_intersect_key($obj,array_flip($desc['fields']));
 	$obj_to_post['hook'] = $desc['hook'];
-	
+
 	$user_agent = "HookPress/{$hookpress_version} (compatible; WordPress {$wp_version}; +http://mitcho.com/code/hookpress/)";
-	
-	$request = apply_filters( 'hookpress_request', array('user-agent' => $user_agent, 'body' => $obj_to_post, 'referer' => get_bloginfo('url')) );
-	
+
+	$request = apply_filters( 'hookpress_request', array('user-agent' => $user_agent, 'body' => $obj_to_post, 'referer' => get_bloginfo('url'), 'headers' => array('source-url' => get_bloginfo('url'), 'source-name' => get_bloginfo('name'))) );
+
 	return wp_remote_post($desc['url'], $request);
 }
