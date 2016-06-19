@@ -17,7 +17,15 @@ $hookpress_actions = array(
 	'edit_category'=>array('CATEGORY'),
 	'edit_post'=>array('POST'),
 	'pre_post_update'=>array('POST'),
-	'private_to_publish'=>array('POST'), // TODO: check if this is really the post ID
+	'publish_to_private'=>array('POST'),
+	'publish_to_draft'=>array('POST'),
+	'publish_to_trash'=>array('POST'),
+	'pending_to_publish'=>array('POST'),
+	'future_to_publish'=>array('POST'),
+	'draft_to_publish'=>array('POST'),
+	'trash_to_publish'=>array('POST'),
+	'private_to_publish'=>array('POST'),
+	'publish_to_publish'=>array('POST'),
 	'publish_page'=>array('POST'),
 	'publish_phone'=>array('POST'),
 	'publish_post'=>array('POST'),
@@ -38,7 +46,7 @@ $hookpress_actions = array(
 	'traceback_post'=>array('COMMENT'),
 	'wp_blacklist_check'=>array('comment_author','comment_author_email','comment_author_url','comment_content','comment_author_IP','comment_agent'),
 	'wp_set_comment_status'=>array('COMMENT','status'),
-	
+
 	'add_link'=>array('LINK'),
 	'delete_link'=>array('LINK'),
 	'edit_link'=>array('LINK'),
@@ -75,7 +83,7 @@ $hookpress_actions = array(
 //	'admin_footer'=>array(),
 //	'admin_print_scripts'=>array(),
 //	'admin_print_styles'=>array(),
-//	'admin_print_scripts-(page_hook)'=>array(),	
+//	'admin_print_scripts-(page_hook)'=>array(),
 	'check_passwords'=>array('user_login','pass1','pass2'),
 //	'dbx_post_advanced'=>array(),
 //	'dbx_post_sidebar'=>array(),
@@ -191,7 +199,7 @@ $hookpress_filters = array(
 	'wp_get_attachment_url'=>array('url','POST'),
 	'wp_mime_type_icon'=>array('icon','mime','POST'),
 	'wp_title'=>array('title','sep','seplocation'),
-	
+
 // Post, Page, and Attachment Filters: db write
 	'add_ping'=>array('new'),
 //	'attachment_max_dims'=>array('ARR_max_dims'),
@@ -228,15 +236,15 @@ $hookpress_filters = array(
 	'get_comment_type'=>array('comment_type'),
 	'get_comments_number'=>array('count'),
 	'post_comments_feed_link'=>array('url'),
-	
+
 	// Comment, Trackback, and Ping Filters: db writes
 	'comment_save_pre'=>array('comment_text'),
 	'pre_comment_approved'=>array('approved'), // '0,1,spam'
 //	'preprocess_comment'=>array('COMMENT_ARR'),
 //	'wp_insert_post_data'=>array('POST_DATA_ARR'),
 	'pre_comment_content'=>array('comment_text')
-	
-	
+
+
 	// TODO: ADD MORE...
 );
 
