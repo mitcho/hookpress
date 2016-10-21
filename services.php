@@ -10,7 +10,7 @@ function hookpress_ajax_get_fields() {
 	$fields = array();
 	if (is_array($args)) {
 		foreach ($args as $arg) {
-			if (ereg('[A-Z]+',$arg))
+			if (preg_match('[A-Z]+',$arg))
 				$fields = array_merge($fields,hookpress_get_fields($arg));
 			else
 				$fields[] = $arg;
@@ -46,7 +46,7 @@ function hookpress_ajax_add_fields() {
 			'type'=>$_POST['type'],
 			'hook'=>$_POST['hook'],
 			'enabled'=>$_POST['enabled'],
-			'fields'=>split(',',$_POST['fields'])
+			'fields'=>explode(',',$_POST['fields'])
 		);
 		hookpress_update_hook( $id, $edithook );
 
@@ -57,7 +57,7 @@ function hookpress_ajax_add_fields() {
 			'url'=>$_POST['url'],
 			'type'=>$_POST['type'],
 			'hook'=>$_POST['hook'],
-			'fields'=>split(',',$_POST['fields']),
+			'fields'=>explode(',',$_POST['fields']),
 			'enabled'=>true
 		);
 		$id = hookpress_add_hook($newhook);
