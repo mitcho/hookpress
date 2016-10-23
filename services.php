@@ -2,8 +2,10 @@
 
 function hookpress_ajax_get_fields() {
 	global $wpdb, $hookpress_actions, $hookpress_filters;
-	if ($_POST['type'] == 'action')
-		$args = $hookpress_actions[$_POST['hook']];
+	if ($_POST['type'] == 'action') {
+		$hooks = apply_filters( 'hookpress_actions', $hookpress_actions );
+		$args = $hooks[$_POST['hook']];
+	}
 	if ($_POST['type'] == 'filter')
 		$args = $hookpress_filters[$_POST['hook']];
 
@@ -119,8 +121,10 @@ function hookpress_ajax_edit_hook( $id ) {
 
 function hookpress_ajax_get_hooks() {
 	global $wpdb, $hookpress_actions, $hookpress_filters;
-	if ($_POST['type'] == 'action')
-		$hooks = array_keys($hookpress_actions);
+	if ($_POST['type'] == 'action') {
+		$hooks = apply_filters( 'hookpress_actions', $hookpress_actions );
+		$hooks = array_keys($hooks);
+	}
 	if ($_POST['type'] == 'filter')
 		$hooks = array_keys($hookpress_filters);
 
