@@ -270,6 +270,8 @@ function hookpress_generic_action($id,$args) {
 			case 'POST':
 			case 'ATTACHMENT':
 				$newobj = get_post($arg,ARRAY_A);
+				
+				$newobj["post_author"] = get_the_author_meta('display_name', $newobj["post_author"]);
 
 				if ($arg_names[$i] == 'POST')
 					$newobj["post_url"] = get_permalink($newobj["ID"]);
