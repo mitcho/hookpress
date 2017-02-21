@@ -27,8 +27,13 @@ function hookpress_get_fields( $type ) {
 	}
 
 	// if it's a POST, we have a URL for it as well.
-	if ($type == 'POST' || $type == 'PARENT_POST')
+	if ($type == 'POST' || $type == 'PARENT_POST') {
 		$fields[] = 'post_url';
+		$fields[] = 'featured_image_src';
+		$fields[] = 'featured_image_width';
+		$fields[] = 'featured_image_height';
+		$fields[] = 'featured_image_sizes';
+	}
 
 	if ($type == 'PARENT_POST')
 		$fields = array_map(create_function('$x','return "parent_$x";'),$fields);
@@ -271,8 +276,24 @@ function hookpress_generic_action($id,$args) {
 			case 'ATTACHMENT':
 				$newobj = get_post($arg,ARRAY_A);
 
-				if ($arg_names[$i] == 'POST')
+				if ($arg_names[$i] == 'POST') {
 					$newobj["post_url"] = get_permalink($newobj["ID"]);
+
+					$f_im_data = get_the_post_thumbnail($newobj["ID"]);
+					$ex = [];
+					preg_match_all("/([a-z]+)=\"([a-z0-9A-Z_\-\.\/:]+)\"/", $f_im_data, $ex);
+					foreach ($ex[1] as $key => $value) {
+						if ( array_search("featured_image_{$value}",$desc['fields']) ) {
+						error_log(">>>> featured_image_{$value}");
+							$newobj["featured_image_{$value}"] = $ex[ 2 ][ $key ];
+						}
+						unset($key,$value);
+					}
+					error_log(print_r($desc['fields'],true));
+					error_log(print_r($ex[1],true));
+
+					unset($f_im_data,$ex);
+				}
 					
 				if (wp_is_post_revision($arg)) {
 					$parent = get_post(wp_is_post_revision($arg));
