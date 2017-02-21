@@ -135,3 +135,20 @@ function hookpress_ajax_get_hooks() {
 	}
 	exit;
 }
+
+function hookpress_get_shortcode_attribs($post_content, $tag)
+{
+	$ex = [];
+
+	preg_match("/\[{$tag}(.*)\]\[\/{$tag}\]/", $post_content, $ex);
+
+	return $ex[0];
+}
+
+function hookpress_parse_attribs($content)
+{
+	$output = [];
+	preg_match_all("/([a-z]+)=\"([a-z0-9A-Z_\-\.\/:]+)\"/", $content, $output);
+
+	return array_combine($output[1], $output[2]);
+}
