@@ -27,8 +27,18 @@ function hookpress_get_fields( $type ) {
 	}
 
 	// if it's a POST, we have a URL for it as well.
-	if ($type == 'POST' || $type == 'PARENT_POST')
+	if ($type == 'POST' || $type == 'PARENT_POST') {
 		$fields[] = 'post_url';
+	}
+
+	if ( in_array($type, ['POST','PARENT_POST','ATTACHMENT']) ) {
+		$fields[] = 'featured_image_src';
+		$fields[] = 'featured_image_width';
+		$fields[] = 'featured_image_height';
+		$fields[] = 'featured_image_sizes';
+		$fields[] = 'audio_shortcode_src';
+		$fields[] = 'audio_shortcode_type';
+	}
 
 	if ($type == 'PARENT_POST')
 		$fields = array_map(create_function('$x','return "parent_$x";'),$fields);
@@ -271,8 +281,42 @@ function hookpress_generic_action($id,$args) {
 			case 'ATTACHMENT':
 				$newobj = get_post($arg,ARRAY_A);
 
-				if ($arg_names[$i] == 'POST')
+				if ($arg_names[$i] == 'POST') {
 					$newobj["post_url"] = get_permalink($newobj["ID"]);
+
+					//Getting attached image data
+					$f_im_data = get_the_post_thumbnail($newobj["ID"]);
+					$ex = [];
+					preg_match_all("/([a-z]+)=\"([a-z0-9A-Z_\-\.\/:]+)\"/", $f_im_data, $ex);
+					foreach ($ex[1] as $key => $value) {
+						if ( array_search("featured_image_{$value}",$desc['fields']) ) {
+							$newobj["featured_image_{$value}"] = $ex[ 2 ][ $key ];
+						}
+						unset($key,$value);
+					}
+
+					//Getting audio shortcode data
+					$ex = hookpress_get_shortcode_attribs($newobj["post_content"],'audio');
+					$ex = hookpress_parse_attribs( $ex );
+					foreach ($ex as $key => $value) {
+						switch ($key) {
+							case 'src':
+							case 'ogg':
+							case 'mp3':
+							case 'wav':
+								if ( array_search("audio_shortcode_src",$desc['fields']) ) {
+									$newobj["audio_shortcode_src"] = $value;
+								}
+								if ( array_search("audio_shortcode_type",$desc['fields']) ) {
+									$newobj["audio_shortcode_type"] = $key;
+								}
+								break;
+						}
+						unset($key,$value);
+					}
+
+					unset($f_im_data,$ex);
+				}
 					
 				if (wp_is_post_revision($arg)) {
 					$parent = get_post(wp_is_post_revision($arg));
