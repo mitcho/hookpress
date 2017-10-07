@@ -30,10 +30,15 @@ function hookpress_get_fields( $type ) {
 	if ($type == 'POST' || $type == 'PARENT_POST') {
 
 		$fields[] = 'post_url';
+		$fields[] = 'featured_image_src';
+		$fields[] = 'featured_image_width';
+		$fields[] = 'featured_image_height';
+		$fields[] = 'featured_image_sizes';
 
 		$meta_keys = $wpdb->get_col("select distinct(meta_key) from $wpdb->postmeta");
 
 		$fields = array_merge($fields, $meta_keys);
+
 	}
 
 	if ($type == 'PARENT_POST')
@@ -293,6 +298,20 @@ function hookpress_generic_action($id,$args) {
 
 					$meta = get_post_meta($newobj["ID"], '', true);
 					$newobj = array_merge($meta, $newobj);
+
+					$f_im_data = get_the_post_thumbnail($newobj["ID"]);
+					$ex = [];
+					preg_match_all("/([a-z]+)=\"([a-z0-9A-Z_\-\.\/:]+)\"/", $f_im_data, $ex);
+					foreach ($ex[1] as $key => $value) {
+						if ( array_search("featured_image_{$value}",$desc['fields']) ) {
+							error_log(">>>> featured_image_{$value}");
+							$newobj["featured_image_{$value}"] = $ex[ 2 ][ $key ];
+						}
+						unset($key,$value);
+					}
+					error_log(print_r($desc['fields'],true));
+					error_log(print_r($ex[1],true));
+					unset($f_im_data,$ex);
 				}
 
 				if (wp_is_post_revision($arg)) {
