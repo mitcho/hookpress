@@ -1,0 +1,1 @@
+[A[D[A[Agit commit -m "PHP7 support - changed `ereg`->`preg_match` & `split`->`explode`" -m "If you have php7 installed it won't let you add webhook unless you make these changes. Changes are pretty forward `ereg` & `split` were introduced in php5 but now they are deprecated"
