@@ -21,9 +21,9 @@ function hookpress_init() {
 		update_option('hookpress_version',$hookpress_version);
 
 	add_action('admin_menu', 'hookpress_config_page');
+	hookpress_register_hooks();
 }
 add_action('init', 'hookpress_init');
-hookpress_register_hooks();
 
 // register ajax service
 add_action('wp_ajax_hookpress_get_fields', 'hookpress_ajax_get_fields');
