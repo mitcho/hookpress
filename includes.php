@@ -109,7 +109,7 @@ if ($desc['type'] == 'filter')
 
 	$fields = array();
 	foreach ($args as $arg) {
-		if (preg_match('[A-Z]+',$arg))
+		if (preg_match('/[A-Z]+/',$arg))
 			$fields = array_merge($fields,hookpress_get_fields($arg));
 		else
 			$fields[] = $arg;
