@@ -64,12 +64,12 @@ HookPress currently makes requests synchronously so can measurably affect perfor
 	* added webhook editing
 * Various miscellaneous features: added nonces for security, modularized the code a bit, etc.
 = 0.1.8 =
-* Added more filtersÑnow covers basic + comment filters
+* Added more filters, now covers basic + comment filters
 * Marking as compatible through 2.9.9, because it should be.
 * Added version checking and beta offers to the options screen.
 = 0.1.7 =
 * Now supports basically all actions. (Still no actions with no arguments.)
-* Added more filter optionsÑnow covers all basic database read filters.
+* Added more filter options, now covers all basic database read filters.
 = 0.1.6 =
 * Added another batch of actions. (Still no actions with no arguments, though... something to consider.)
 * Fixed hooks which referred to the users and links tables.
