@@ -37,10 +37,10 @@ function hookpress_get_fields( $type ) {
 	}
 
 	if ($type == 'PARENT_POST')
-		$fields = array_map(create_function('$x','return "parent_$x";'),$fields);
+		$fields = array_map(function ($x) { return "parent_$x"; }, $fields);
 
 	if ($type == 'OLD_USER_OBJ')
-		$fields = array_map(create_function('$x','return "old_$x";'),$fields);
+		$fields = array_map(function ($x) { return "old_$x"; }, $fields);
 
 	$fields = apply_filters('hookpress_get_fields', $fields, $type);
 
@@ -244,10 +244,12 @@ function hookpress_register_hooks() {
 
 	foreach ( $all_hooks as $id => $desc) {
 		if (count($desc) && $desc['enabled']) {
-			$hookpress_callbacks[$id] = create_function('','
+
+			$hookpress_callbacks[$id] = function() use ($id) {
 				$args = func_get_args();
-				return hookpress_generic_action('.$id.',$args);
-			');
+
+				return hookpress_generic_action($id, $args);
+			};
 
 			$arg_count = 0;
 			if (isset($desc['type']) && $desc['type'] == 'filter')
@@ -323,7 +325,7 @@ function hookpress_generic_action($id,$args) {
 			case 'USER_OBJ':
 				$newobj = (array) $arg;
 			case 'OLD_USER_OBJ':
-				$newobj = array_map(create_function('$x','return "old_$x";'), (array) $arg);
+				$newobj = array_map(function ($x) { return "old_$x"; }, (array) $arg);
 			default:
 				$newobj[$arg_names[$i]] = $arg;
 		}
