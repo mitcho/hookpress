@@ -3,14 +3,14 @@
 Plugin Name: HookPress
 Plugin URI: http://mitcho.com/code/hookpress/
 Description: HookPress turns all of your WordPress-internal hooks into webhooks. Possible uses include generating push notifications or using non-PHP web technology to extend WordPress. Read more about webhooks at <a href='http://webhooks.org/'>the webhooks site</a>.
-Version: 1.14
+Version: 1.16
 Author: mitcho (Michael Yoshitaka Erlewine)
 Author URI: http://mitcho.com/
 Donate link: http://tinyurl.com/donatetomitcho
 */
 
 define('HOOKPRESS_PRIORITY',12838790321);
-$hookpress_version = "1.14";
+$hookpress_version = "1.16";
 require('includes.php');
 
 function hookpress_init() {
@@ -21,9 +21,11 @@ function hookpress_init() {
 		update_option('hookpress_version',$hookpress_version);
 
 	add_action('admin_menu', 'hookpress_config_page');
+	hookpress_register_hooks();
+
 }
+
 add_action('init', 'hookpress_init');
-hookpress_register_hooks();
 
 // register ajax service
 add_action('wp_ajax_hookpress_get_fields', 'hookpress_ajax_get_fields');
