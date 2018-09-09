@@ -39,6 +39,8 @@ If you have a feature request or question, please use the [HookPress support for
 HookPress currently makes requests synchronously so can measurably affect performance. I highly recommend using a caching plugin such as [WP-SuperCache](http://ocaoimh.ie/wp-super-cache/) to stem the performance hit. If your filters' results are time-sensitive or dependent on external data sources as well, make sure to set an appropriate cache expiration time.
 
 == Changelog ==
+= 1.15 = 
+* Added basic support for JSON webhooks and header based authentication.
 
 = 1.14 =
 * Additional security hardening for `test.php`, now no longer bundled as a `.php`
@@ -62,12 +64,12 @@ HookPress currently makes requests synchronously so can measurably affect perfor
 	* added webhook editing
 * Various miscellaneous features: added nonces for security, modularized the code a bit, etc.
 = 0.1.8 =
-* Added more filters—now covers basic + comment filters
+* Added more filters, now covers basic + comment filters
 * Marking as compatible through 2.9.9, because it should be.
 * Added version checking and beta offers to the options screen.
 = 0.1.7 =
 * Now supports basically all actions. (Still no actions with no arguments.)
-* Added more filter options—now covers all basic database read filters.
+* Added more filter options, now covers all basic database read filters.
 = 0.1.6 =
 * Added another batch of actions. (Still no actions with no arguments, though... something to consider.)
 * Fixed hooks which referred to the users and links tables.

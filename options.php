@@ -111,12 +111,14 @@ var editSubmit = function editSubmit() {
 	tb.find('#editindicator').html('<div class="webhooks-spinner">&nbsp;</div>');
 
 	id = tb.find('#edit-hook-id').val();
-	
+
 	$.ajax({type: 'POST',
 		url:'admin-ajax.php',
 		data:'action=hookpress_add_fields'
 				 +'&fields='+tb.find('#editfields').val().join()
 				 +'&url='+tb.find('#editurl').val()
+				 +'&contenttype='+tb.find('#editcontenttype').val()
+				 +'&headers='+tb.find('#editheaders').val()
 				 +'&type='+tb.find('.newtype:checked').attr('id')
 				 +'&hook='+tb.find('#edithook').val()
 				 +'&enabled='+tb.find('#enabled').val()

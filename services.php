@@ -46,7 +46,9 @@ function hookpress_ajax_add_fields() {
 			'type'=>$_POST['type'],
 			'hook'=>$_POST['hook'],
 			'enabled'=>$_POST['enabled'],
-			'fields'=>split(',',$_POST['fields'])
+			'contenttype'=>$_POST['contenttype'],
+			'fields'=>split(',',$_POST['fields']),
+			'headers'=>split(',',$_POST['headers'])
 		);
 		hookpress_update_hook( $id, $edithook );
 

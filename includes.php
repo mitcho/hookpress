@@ -3,6 +3,12 @@
 require('services.php');
 require('hooks.php');
 
+function split_header($carry, $item) { 
+	list($key, $value) = explode(":", $item);
+	$carry[trim($key)] = trim($value);
+	return $carry;
+}
+
 // OPTIONS
 
 function hookpress_get_fields( $type ) {
@@ -123,6 +129,24 @@ if ($desc['type'] == 'filter')
 ?></select></td></tr>
 <tr><td><label style='font-weight: bold' for='newurl'><?php _e("URL",'hookpress');?>: </label></td>
 <td><input name='editurl' id='editurl' size='40' value="<?php echo $desc['url']; ?>"></input></td></tr>
+<tr><td><label style='font-weight: bold' for='newurlcontenttype'><?php _e("Content-Type",'hookpress');?>: </label></td>
+<td>
+<select name='editcontentype' id='editcontenttype'>
+<?php
+	$default_content_type = 'application/x-www-form-urlencoded; charset=UTF-8';
+	$content_types = array($default_content_type, 'application/json'); 
+	foreach($content_types as $content_type) { 
+		if ((empty($desc['contenttype']) && $content_type == $default_content_type) || $content_type == $desc['contenttype']) { 
+			$selected = 'selected="true"';
+		} else { 
+			$selected = '';
+		}
+		echo "<option value='$content_type' $selected>$content_type</option>";
+	}
+?>
+</select></td></tr>
+<tr><td><label style='font-weight: bold' for='newheaders'><?php _e("Headers", 'hookpress');?>: </label></td>
+<td><input name='editheaders' id='editheaders' size='40' value="<?php echo empty($desc['headers']) ? "" : implode(",", $desc['headers']); ?>"></input></td></tr>
 </table>
 <?php	echo $nonce_submit; ?>
 	<center><span id='editindicator'></span><br/>
@@ -314,8 +338,11 @@ function hookpress_generic_action($id,$args) {
 	$obj_to_post['hook'] = $desc['hook'];
 	
 	$user_agent = "HookPress/{$hookpress_version} (compatible; WordPress {$wp_version}; +http://mitcho.com/code/hookpress/)";
-	
-	$request = apply_filters( 'hookpress_request', array('user-agent' => $user_agent, 'body' => $obj_to_post, 'referer' => get_bloginfo('url')) );
+	$headers = array_reduce($desc['headers'], 'split_header', array());
+	$content_type = empty($desc['contenttype']) ? 'application/x-www-form-urlencoded; charset=UTF-8' : $desc['contenttype'];
+	$headers = array_merge($headers, array('Content-Type' => $content_type));
+
+	$request = apply_filters( 'hookpress_request', array('headers' => $headers, 'user-agent' => $user_agent, 'body' => $content_type == 'application/json' ? json_encode($obj_to_post) : $obj_to_post, 'referer' => get_bloginfo('url')) );
 	
 	return wp_remote_post($desc['url'], $request);
 }
