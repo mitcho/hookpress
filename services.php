@@ -2,15 +2,17 @@
 
 function hookpress_ajax_get_fields() {
 	global $wpdb, $hookpress_actions, $hookpress_filters;
-	if ($_POST['type'] == 'action')
-		$args = $hookpress_actions[$_POST['hook']];
+	if ($_POST['type'] == 'action') {
+		$hooks = apply_filters( 'hookpress_actions', $hookpress_actions );
+		$args = $hooks[$_POST['hook']];
+	}
 	if ($_POST['type'] == 'filter')
 		$args = $hookpress_filters[$_POST['hook']];
 
 	$fields = array();
 	if (is_array($args)) {
 		foreach ($args as $arg) {
-			if (ereg('[A-Z]+',$arg))
+			if (preg_match('[A-Z]+',$arg))
 				$fields = array_merge($fields,hookpress_get_fields($arg));
 			else
 				$fields[] = $arg;
@@ -46,7 +48,7 @@ function hookpress_ajax_add_fields() {
 			'type'=>$_POST['type'],
 			'hook'=>$_POST['hook'],
 			'enabled'=>$_POST['enabled'],
-			'fields'=>split(',',$_POST['fields'])
+			'fields'=>explode(',',$_POST['fields'])
 		);
 		hookpress_update_hook( $id, $edithook );
 
@@ -57,7 +59,7 @@ function hookpress_ajax_add_fields() {
 			'url'=>$_POST['url'],
 			'type'=>$_POST['type'],
 			'hook'=>$_POST['hook'],
-			'fields'=>split(',',$_POST['fields']),
+			'fields'=>explode(',',$_POST['fields']),
 			'enabled'=>true
 		);
 		$id = hookpress_add_hook($newhook);
@@ -119,8 +121,10 @@ function hookpress_ajax_edit_hook( $id ) {
 
 function hookpress_ajax_get_hooks() {
 	global $wpdb, $hookpress_actions, $hookpress_filters;
-	if ($_POST['type'] == 'action')
-		$hooks = array_keys($hookpress_actions);
+	if ($_POST['type'] == 'action') {
+		$hooks = apply_filters( 'hookpress_actions', $hookpress_actions );
+		$hooks = array_keys($hooks);
+	}
 	if ($_POST['type'] == 'filter')
 		$hooks = array_keys($hookpress_filters);
 
